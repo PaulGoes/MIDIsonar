@@ -1,7 +1,7 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 0.3                                                                 */
+/* Version: 0.4                                                                 */
 /* Date:    3-6-2016                                                            */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
@@ -17,6 +17,10 @@
 /*                                                                              */
 /* v0.3    : Added function that converts integer value to string in order to   */
 /*           display meaningful values on the LCD.                              */
+/*                                                                              */
+/* v0.4    : Added setup mode. Navigation through the six setup screens. Setup  */
+/*           screens display the initalizaton data from the data array.         */
+/*           Changing the data values is not yet implemented.                   */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -78,7 +82,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v0.3");
+  lcd.print("MIDIsonar   v0.4");
 
   delay(1000);
 
@@ -117,14 +121,21 @@ void MODEstandby()
 {
 
   lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Mode: Standby");
-  delay(500);
+  lcd.setCursor(0,0); lcd.print("MIDIsonar");
+  lcd.setCursor(0,1); lcd.print("Standby");
+  delay(1000);
 
   do 
   {
-
-  } while (digitalRead(buttonPin1) == LOW);
+    if(digitalRead(buttonPin1) == HIGH) 
+      {
+        do
+          delay(20);
+        while(digitalRead(buttonPin1) == HIGH);
+        return;
+      }
+    delay(20);
+  } while (true);
 
 } /* End of MODEstandby */
 
@@ -138,14 +149,93 @@ void MODEsetup()
 {
 
   lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Mode: Setup  ");
-  delay(500);
-  
+  lcd.setCursor(0,0); lcd.print("MIDIsonar");
+  lcd.setCursor(0,1); lcd.print("Setup");
+  delay(1000);
+  lcd.clear();
+
+  int menu_id = 0;      
+  int menu_id_old = 3;
+  int screen_id;
+  int screen_id_old;
+
+  int controller_id;
+  int array_pos;
+
+  char* valstr = "   ";
+
   do 
   {
+    screen_id = menu_id/3;
+    screen_id_old = menu_id_old/3;
 
-  } while (digitalRead(buttonPin1) == LOW);
+    controller_id = menu_id/9;
+    array_pos = menu_id%9;
+    if(array_pos>5) array_pos=array_pos+3*(value[controller_id][1]-1);
+
+    /* redraw the complete screen if the current menu item is on a new setup screen */
+    if(screen_id != screen_id_old)
+       {
+         lcd.noCursor();
+         lcd.clear();
+         lcd.setCursor(0,0);
+         if(controller_id==0) lcd.print("A:"); else lcd.print("B:");
+
+         for(int counter=0; counter<3; counter++)
+         {
+            lcd.setCursor(2+counter*5,0); lcd.print(menu[(array_pos/3)*3+counter]);
+            value2string(value[controller_id][(array_pos/3)*3+counter], valstr, type[(array_pos/3)*3+counter]);
+            lcd.setCursor(3+counter*5,1); lcd.print(valstr);
+         }
+       }
+
+    /* draw the cursor at the place of the current menu item */
+    lcd.noCursor();
+    lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();
+
+    /* check for setup actions */
+    do
+    {
+      /* MODE SELECT button pressed */
+      if(digitalRead(buttonPin1) == HIGH)
+      {
+        do
+            delay(20);
+        while(digitalRead(buttonPin1) == HIGH);
+        lcd.noCursor();
+        return;
+      }
+
+      /* MENU PREV button pressed */
+      if(digitalRead(buttonPin2) == HIGH) 
+      {
+        if(menu_id>0) 
+        {
+          menu_id_old=menu_id; 
+          menu_id--;
+          do
+            delay(20);
+          while(digitalRead(buttonPin2) == HIGH);
+        } 
+        break;
+      }
+
+      /* MENU NEXT button pressed */
+      if(digitalRead(buttonPin3) == HIGH) 
+      {
+        if(menu_id<17) 
+        {
+          menu_id_old=menu_id; 
+          menu_id++;
+          do
+            delay(20);
+          while(digitalRead(buttonPin3) == HIGH);
+        }
+        break;
+      }
+    } while (true);
+          
+  } while (true);
 
 } /* End of MODEsetup */
 
@@ -161,15 +251,16 @@ void MODEplay()
   char* valstr = "   ";
 
   lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Mode: Play   ");
-  delay(500);
+  lcd.setCursor(0,0); lcd.print("MIDIsonar");
+  lcd.setCursor(0,1); lcd.print("Play");
+  delay(1000);
   lcd.clear();
   
   do 
   {
 
-    for(int counter=0; counter<12; counter++){
+    for(int counter=0; counter<12; counter++)
+    {
 
       lcd.setCursor(0,0); lcd.print("   "); lcd.setCursor(0,0); lcd.print(menu[counter]);
       lcd.setCursor(6,0); lcd.print("A:"); lcd.setCursor(6,1); lcd.print("B:");
@@ -180,13 +271,20 @@ void MODEplay()
       value2string(value[1][counter], valstr, type[counter]);
       lcd.setCursor(9,1); lcd.print("   "); lcd.setCursor(9,1); lcd.print(valstr);
       
-      for(int timer=0; timer<1000; timer++){
-        if(digitalRead(buttonPin1) == HIGH) return;
+      for(int timer=0; timer<1000; timer++)
+      {
+        if(digitalRead(buttonPin1) == HIGH) 
+        {
+          do
+            delay(20);
+          while(digitalRead(buttonPin1) == HIGH);
+          return;
+        }
         delay(1);
       }
     }
 
-  } while (digitalRead(buttonPin1) == LOW);
+  } while (true);
 
 } /* End of MODEplay */
 
