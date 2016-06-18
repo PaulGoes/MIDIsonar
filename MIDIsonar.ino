@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 0.5                                                                 */
-/* Date:    15-6-2016                                                            */
+/* Version: 0.6                                                                */
+/* Date:    17-6-2016                                                            */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -24,6 +24,10 @@
 /*                                                                              */
 /* v0.5    : Added the functionality to change values in setup mode.  Added     */
 /*           extensive in-code comments to document the logic.                  */
+/*                                                                              */
+/* v0.6    : Solved bug #1 'LDST and HDST displays wrong values when LDST>HDST  */
+/*           and HDST<LDST' and solved bug #2 'Jitter at certain positions of   */
+/*           the value dial'.                                                   */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -89,7 +93,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v0.5");
+  lcd.print("MIDIsonar   v0.6");
 
   delay(1000);
 
@@ -174,8 +178,9 @@ void MODEsetup()
   int controller_id;      /* controller id of the selected menu item */
   int array_pos;          /* position of the selected menu item in the value array */
 
-  int init_val;           /* intial value read from the potentiometer at the selection of a new menu item [0-1023] */
-  int pot_val;            /* current value read from the potentiometer [0-1023] */
+  int init_potval;        /* intial value read from the potentiometer at the selection of a new menu item [0-1023] */
+  int read_potval;        /* current value read from the potentiometer [0-1023] */
+  int prev_potval;        /* previous value read from the potentiometer [0-1023] */
   int prev_val;           /* previous value of the selected menu item as stored in the value array [type specific] */
   int temp_val;           /* temporary value for the selected menu item [type specific] */
   int treshold;           /* indicates whether value knob is turned past treshold (0=FALSE, 1=TRUE) */
@@ -216,7 +221,8 @@ void MODEsetup()
     lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();
 
     /* read the initial value for the selected menu item */
-    init_val = analogRead(potPin1);
+    init_potval = analogRead(potPin1);
+    prev_potval = init_potval;
     
     /* read the stored value for the selected menu item from the value array */
     prev_val = value[controller_id][array_pos];
@@ -271,49 +277,52 @@ void MODEsetup()
       }
 
       /* read the current value of the potentiometer */
-      pot_val = analogRead(potPin1);
+      read_potval = analogRead(potPin1);
 
       /* check if potentiometer is turned past the treshold of -4 to +4 */
-      if( (abs(pot_val-init_val) > 4) and (treshold==0) )
+      if( (abs(read_potval-init_potval) > 4) and (treshold==0) )
         {
           treshold = 1;
         }
         
       /* only change value if potentiometer is turned past the treshold */
-      if(treshold == 1)
+      if( (abs(read_potval-prev_potval) > 1) and (treshold==1) )
         {
+          /* set previous value of the potentiometer */
+          prev_potval = read_potval;
+          
           /* convert the current value of the potentiometer to a type specific value */
           switch(array_pos)
           {
-            case 0: temp_val = pot_val/512; break;
-            case 1: temp_val = pot_val/512+1; break;
-            case 2: temp_val = pot_val/64+1; break;
-            case 3: temp_val = (pot_val/64)*5+5; 
+            case 0: temp_val = read_potval/512; break;
+            case 1: temp_val = read_potval/512+1; break;
+            case 2: temp_val = read_potval/64+1; break;
+            case 3: temp_val = (read_potval/64)*5+5; 
                     /* value of LDST must be lower then value of HDST */
-                    if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; 
+                    if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-5; 
                     break;
-            case 4: temp_val = (pot_val/64)*5+5; 
+            case 4: temp_val = (read_potval/64)*5+5; 
                     /* value of HDST must be higher then value of LDST */
-                    if(temp_val<=value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+1; 
+                    if(temp_val<=value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+5; 
                     break;
-            case 5: temp_val = pot_val/512; break;
-            case 6: temp_val = pot_val/8; break;
-            case 7: temp_val = pot_val/8; 
+            case 5: temp_val = read_potval/512; break;
+            case 6: temp_val = read_potval/8; break;
+            case 7: temp_val = read_potval/8; 
                     /* value of LVAL must be lower then value of HVAL */
                     if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; 
                     break;
-            case 8: temp_val = pot_val/8; 
+            case 8: temp_val = read_potval/8; 
                      /* value of HVAL must be higher then value of LVAL */
                     if(temp_val<=value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+1; 
                     break;
-            case 9: temp_val = pot_val/128+1; break;
-            case 10: temp_val = pot_val/8;
+            case 9: temp_val = read_potval/128+1; break;
+            case 10: temp_val = read_potval/8;
                      /* keep value between specified range */ 
                      if(temp_val<12) temp_val=12; if(temp_val>119) temp_val=119; 
                      /* value of LVAL must be lower then value of HVAL */
                      if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; 
                      break;
-            case 11: temp_val = pot_val/8; 
+            case 11: temp_val = read_potval/8; 
                      /* keep value between specified range */ 
                      if(temp_val<12) temp_val=12; if(temp_val>119) temp_val=119;
                       /* value of HVAL must be higher then value of LVAL */
