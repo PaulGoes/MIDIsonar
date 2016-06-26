@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 0.6                                                                */
-/* Date:    17-6-2016                                                            */
+/* Version: 0.6                                                                 */
+/* Date:    24-6-2016                                                           */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -28,11 +28,15 @@
 /* v0.6    : Solved bug #1 'LDST and HDST displays wrong values when LDST>HDST  */
 /*           and HDST<LDST' and solved bug #2 'Jitter at certain positions of   */
 /*           the value dial'.                                                   */
+/*                                                                              */
+/* v0.7    : Implemented play mode. Implemented is only sonar controller A.     */
+/*           For this controller the complete functionality is implemented.     */
+/*           Both controller types (MIDI notes and MIDI CC) are implemented.    */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
 /* Arduino Pin connections:                                                     */
-/*    TXD - Midi Out Serial               D10 - Sonar A Led                     */
+/*    TXD - MIDI OUT Serial               D10 - Sonar A Led                     */
 /*    D2  - LCD Bit 7 (pin 14)            D11 - LCD Clock (pin 6)               */
 /*    D3  - LCD Bit 6 (pin 13)            D12 - LCD Reg Select (pin 4)          */    
 /*    D4  - LCD Bit 5 (pin 12)            D13 - Sonar B Led                     */
@@ -46,6 +50,7 @@
 
 /* include the library code */
 #include <LiquidCrystal.h>
+#include <NewPing.h>
 
 /* initialize the library with the numbers of the interface pins */
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
@@ -55,10 +60,23 @@ const int buttonPin1 = 15;   /* button 1 connected to pin 15 (analog A1) MODE SE
 const int buttonPin2 = 16;   /* button 2 connected to pin 16 (analog A2) MENU PREV   */
 const int buttonPin3 = 17;   /* button 3 connected to pin 17 (analog A3) MENU NEXT   */
 
+/* initialize the LEDs */
+const int ledPinA = 10;      /* activity LED used for controller A connected to pin D10 */
+const int ledPinB = 13;      /* activity LED used for controller B connected to pin D13 */
+
 /* initialize the potentiometer */
 const int potPin1 = 0;       /* potentiometer 1 connected to pin 1 (analog A0) VALUE */
 
 int buttonState = 0;
+
+/* initialize the Sonars */
+#define triggerPinA   6      /* trigger pin sonar sensor A connected to pin D6 */
+#define echoPinA      7      /* echo pin sonar sensor A connected to pin D7    */
+#define triggerPinB   8      /* trigger pin sonar sensor B connected to pin D8 */
+#define echoPinB      9      /* echo pin sonar sensor B connected to pin D9    */
+
+NewPing sonarA(triggerPinA, echoPinA, 100);   /* NewPing setup of sonar A pins and maximum distance */
+NewPing sonarB(triggerPinB, echoPinB, 100);   /* NewPing setup of sonar A pins and maximum distance */
 
 /* initialize the data array with default values */
 int value[2][12] = {
@@ -79,11 +97,15 @@ char* menu[] = { "ACTV", "TYPE", "CHNL", "LDST", "HDST", "POLR", "CNTR", "LVAL",
 
 void setup() 
 {
+  /* initialize serial MIDI OUT interface with the correct baud rate */
+  Serial.begin(31250);
+  
   /* set up the LCD's number of columns and rows */
   pinMode(buttonPin1, INPUT);
   pinMode(buttonPin2, INPUT);
   pinMode(buttonPin3, INPUT);
-
+  pinMode(ledPinA, OUTPUT);
+  pinMode(ledPinB, OUTPUT);
   
   /* set up the LCD screen as 2 lines of 16 characters */
   lcd.begin(16, 2);
@@ -93,7 +115,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v0.6");
+  lcd.print("MIDIsonar   v0.7");
 
   delay(1000);
 
@@ -367,40 +389,156 @@ void MODEplay()
   lcd.clear();
 
   /* initialize variables */
+  int lowRangeA;          /* low range ping controller A in microseconds */
+  int highRangeA;         /* high range ping controller A in microseconds */
+  int rangePolA;          /* polarity controller A */
+  int lowValA;            /* low value for controller A*/
+  int highValA;           /* high value for controller A*/
+  int newValA = 0;        /* current value measured for controller A */
+  int oldValA = 0;        /* previous value measured for controller A */
+
+  int lowRangeB;          /* low range ping controller B in microseconds */
+  int highRangeB;         /* high range ping controller B in microseconds */
+  int rangePolB;          /* polarity controller B */
+  int lowValB;            /* low value for controller B*/
+  int highValB;           /* high value for controller B*/
+  int newValB = 0;        /* current value measured for controller B */
+  int oldValB = 0;        /* previous value measured for controller B */
+
+  int pingTime;           /* measured ping time between trigger and echo */
+  
   char* valstr = "   ";       /* temporary string used to construct formatted string values */
+
+  /* display the static part of the mode play screen and switch on LED's */
+  for(int counter=0; counter<2; counter++)
+  {
+    /* display the label for the controller */
+    if(counter==0) {lcd.setCursor(0,counter); lcd.print("A:");} else {lcd.setCursor(0,counter); lcd.print("B:");}
+
+    /* determine whether the controller is active */
+    if(value[counter][0]==0)
+    {
+      /* controller is not active */
+      /* display OFF */
+      lcd.setCursor(2,counter); lcd.print("OFF");
+    }
+    else
+    {
+      /* controller is active */
+      /* switch on the controller activity LED */
+      if(counter==0) digitalWrite(ledPinA, HIGH); else digitalWrite(ledPinB, HIGH);
+
+      /* display the controller TYPE */
+      value2string(value[counter][1], valstr, type[1]);
+      lcd.setCursor(2,counter); lcd.print(valstr);
+
+      /* display the controller CNTR or NOTE */
+      if(value[counter][1]==1) value2string(value[counter][6], valstr, type[6]);
+      else value2string(value[counter][9], valstr, type[9]);
+      lcd.setCursor(6,counter); lcd.print(valstr);
+
+      /* display the controller CHNL */
+      value2string(value[counter][2], valstr, type[2]);
+      lcd.setCursor(9,counter); lcd.print(valstr);
+
+      /* display three dashes as placeholder for the controller value */
+      lcd.setCursor(13, counter); lcd.print("---");
+    }
+  }
+
+  /* determine lowrange and highrange as pingtimes in microseconds */
+  lowRangeA = value[0][3]*58; highRangeA = value[0][4]*58;
+  lowRangeB = value[1][3]*58; highRangeB = value[1][4]*58;
+  
+  /* determine the polarity */
+  rangePolA = value[0][5]; 
+  rangePolB = value[1][5];
+  
+  /* determine lowval and highval depending on TYPE */
+  if(value[0][1]==1){ lowValA=value[0][7]; highValA=value[0][8];} else {lowValA=value[0][10]; highValA=value[0][11];}
+  if(value[1][1]==1){ lowValB=value[1][7]; highValB=value[1][8];} else {lowValB=value[1][10]; highValB=value[1][11];}
 
   do 
   {
-
-    /* cycle through all positions in the value array */
-    for(int counter=0; counter<12; counter++)
-    {
-      /* display the labels for the two controllers A and B */
-      lcd.setCursor(0,0); lcd.print("   "); lcd.setCursor(0,0); lcd.print(menu[counter]);
-      lcd.setCursor(6,0); lcd.print("A:"); lcd.setCursor(6,1); lcd.print("B:");
-
-      /* display the value for controller A */
-      value2string(value[0][counter], valstr, type[counter]);
-      lcd.setCursor(9,0); lcd.print("   "); lcd.setCursor(9,0); lcd.print(valstr);
-
-      /* display the value for controller B */
-      value2string(value[1][counter], valstr, type[counter]);
-      lcd.setCursor(9,1); lcd.print("   "); lcd.setCursor(9,1); lcd.print(valstr);
-      
-      for(int timer=0; timer<1000; timer++)
+      /* if active, process controller A */
+      if(value[0][0]==1)
       {
-        /* check if MODE SELECT button is pressed */
-        if(digitalRead(buttonPin1) == HIGH) 
+        /* send ping and get ping time in microseconds based on average of 3 pings */
+        pingTime = sonarA.ping_median(3);
+
+        /* only process the results when pingTime is within range */
+        if (pingTime>lowRangeA && pingTime<highRangeA)
         {
-          /* wait until MODE SELECT button is released */
-          do
-            delay(20);
-          while(digitalRead(buttonPin1) == HIGH);
-          return;
-        }
-        delay(1);
+          /* determine new value */
+          newValA = int ( (pingTime-lowRangeA) / ( (highRangeA-lowRangeA) / (highValA-lowValA+1) ) );
+
+          /* adjust value for polarity */
+          if (rangePolA == 1) newValA = lowValA + newValA; else newValA = highValA - newValA;
+
+          /* keep value within range in case of rounding errors */
+          if (newValA<lowValA) newValA=lowValA; if (newValA>highValA) newValA=highValA;
+
+          /* send MIDI controller message if value has changed */
+          if (newValA!=oldValA) 
+          {
+            /* send CC message if TYPE is CC */
+            if(value[0][1]==1)
+            {
+              /* CC: statusbyte=144+channel, databyte1=controller, databyte2=value */
+              MIDImessage(176+value[0][2]-1, value[0][6], newValA);
+
+              /* display value on the LCD screen */
+              value2string(newValA, valstr, 1);
+              lcd.setCursor(13,0); lcd.print(valstr);
+            }
+
+            /* send Note messages if TYPE is NOT */
+            if(value[0][1]==2)
+            {
+              /* Send noteOff messages for the previous chord */
+              MIDIchord(value[0][2], 0, oldValA, value[0][9]);
+
+              /* Send noteOn messages for the new chord */
+              MIDIchord(value[0][2], 1, newValA, value[0][9]);
+
+              /* display value on the LCD screen */
+              value2string(newValA, valstr, 6);
+              lcd.setCursor(13,0); lcd.print(valstr);
+            }
+             
+          }
+
+          /* remember the current value for next cycle */
+          oldValA = newValA;
+        }   
+        
       }
-    }
+
+      /* if active, process controller B */
+      if(value[1][0]==1)
+      {
+
+      /* to be supplied */
+        
+      }
+
+      /* check if MODE SELECT button is pressed */
+      if(digitalRead(buttonPin1) == HIGH)
+      {
+        /* wait until MODE SELECT button is released */
+        do
+            delay(20);
+        while(digitalRead(buttonPin1) == HIGH);
+        
+        /* switch off the controller activity LEDs */
+        digitalWrite(ledPinA, LOW); digitalWrite(ledPinB, LOW);
+
+        /* send noteOff messages for the previous chord if type = NOT */
+        if(value[0][1]==2) MIDIchord(value[0][2], 0, oldValA, value[0][9]);
+        if(value[1][1]==2) MIDIchord(value[1][2], 0, oldValB, value[1][9]);
+
+        return;
+      }
 
   } while (true);
 
@@ -439,8 +577,8 @@ void value2string(int value, char *valstr, int type)
         if(value==3) sprintf(valstr, "MIN");
         if(value==4) sprintf(valstr, "AUG");
         if(value==5) sprintf(valstr, "DIM");
-        if(value==6) sprintf(valstr, "OCT");
-        if(value==7) sprintf(valstr, "5TH");
+        if(value==6) sprintf(valstr, "SUS");
+        if(value==7) sprintf(valstr, "OCT");
         if(value==8) sprintf(valstr, "7TH");
         break;
       case 6:
@@ -461,5 +599,73 @@ void value2string(int value, char *valstr, int type)
         break;
    }
   
-}
+} /* End of value2string */
+
+
+/* ---------------------------------------------------------------------------- */
+/* MIDIchord():                                                                 */
+/* Function:     Creates a MIDI chord                                           */
+/* Arguments:    channel       : MIDI channel                                   */
+/*               notestate     : 0 = send noteOff, 1 = send noteOn              */
+/*               basenote      : basenote for the chord                         */
+/*               chordtype     : chordtype as defined in NOTE                   */
+/* ---------------------------------------------------------------------------- */
+void MIDIchord(int channel, int notestate, int basenote, int chordtype)
+{
+  /* initalize variables */
+  int statusbyte;        /* statusbyte to send to MIDI */
+
+  /* construct statusbyte : noteOff = 128+channel, noteOn= 144+channel */
+  if(notestate == 0) statusbyte = 128+channel-1; else statusbyte = 144+channel-1; 
+
+  /* send basenote to MIDI */
+  MIDImessage(statusbyte, basenote, 100);
+
+  /* send additional notes if NOTE =  MAJ, MIN, AUG, DIM, SUS, OCT or 7TH */
+  switch(chordtype)
+    {
+      case 1: /* single note */
+        break;
+      case 2: /* major chord */ 
+        MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100);
+        break;
+      case 3: /* minor chord */
+        MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100);
+        break;
+      case 4: /* augmented chord */ 
+        MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+8, 100); 
+        break;
+      case 5: /* diminished chord */ 
+        MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+6, 100); 
+        break;
+      case 6: /* suspended chord */ 
+        MIDImessage(statusbyte, basenote+5, 100); MIDImessage(statusbyte, basenote+7, 100); 
+        break;
+      case 7: /* octave */ 
+        MIDImessage(statusbyte, basenote+12, 100); 
+        break;
+      case 8: /* seventh chord */ 
+        MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
+        break;
+    }
+ 
+} /* End of MIDIchord */
+
+
+/* ---------------------------------------------------------------------------- */
+/* MIDImessage():                                                               */
+/* Function:     Sends a MIDI messsage over the serial interface to MIDI OUT    */
+/* Arguments:    statusbyte     : status byte for the MIDI message              */
+/*               databyte1      : first data byte for the MIDI message          */
+/*               databyte2      : second data byte for the MIDI message         */
+/* ---------------------------------------------------------------------------- */
+void MIDImessage(int statusbyte, int databyte1, int databyte2)
+{
+  Serial.write(statusbyte);
+  Serial.write(databyte1);
+  Serial.write(databyte2);
+
+} /* End of MIDImessage */
+
+
 
