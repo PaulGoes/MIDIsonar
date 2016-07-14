@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 0.6                                                                 */
-/* Date:    24-6-2016                                                           */
+/* Version: 0.8                                                                 */
+/* Date:    07-07-2016                                                           */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -32,6 +32,10 @@
 /* v0.7    : Implemented play mode. Implemented is only sonar controller A.     */
 /*           For this controller the complete functionality is implemented.     */
 /*           Both controller types (MIDI notes and MIDI CC) are implemented.    */
+/*                                                                              */
+/* v0.8    : Solved bug #3 'Alternating adjacent notes when playing notes' and  */
+/*           solved bug 'No NoteOff Midi message sent when hand is out of       */
+/*           range'.                                                            */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -115,7 +119,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v0.7");
+  lcd.print("MIDIsonar   v0.8");
 
   delay(1000);
 
@@ -389,6 +393,7 @@ void MODEplay()
   lcd.clear();
 
   /* initialize variables */
+  int pingTimeOldA = 0;   /* previous ping time for controller A */
   int lowRangeA;          /* low range ping controller A in microseconds */
   int highRangeA;         /* high range ping controller A in microseconds */
   int rangePolA;          /* polarity controller A */
@@ -396,7 +401,9 @@ void MODEplay()
   int highValA;           /* high value for controller A*/
   int newValA = 0;        /* current value measured for controller A */
   int oldValA = 0;        /* previous value measured for controller A */
+  int noteStateA = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
 
+  int pingTimeOldB = 0;   /* previous ping time for controller B */
   int lowRangeB;          /* low range ping controller B in microseconds */
   int highRangeB;         /* high range ping controller B in microseconds */
   int rangePolB;          /* polarity controller B */
@@ -404,6 +411,7 @@ void MODEplay()
   int highValB;           /* high value for controller B*/
   int newValB = 0;        /* current value measured for controller B */
   int oldValB = 0;        /* previous value measured for controller B */
+  int noteStateB = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
 
   int pingTime;           /* measured ping time between trigger and echo */
   
@@ -464,9 +472,9 @@ void MODEplay()
       if(value[0][0]==1)
       {
         /* send ping and get ping time in microseconds based on average of 3 pings */
-        pingTime = sonarA.ping_median(3);
+        pingTime = sonarA.ping_median(3);   
 
-        /* only process the results when pingTime is within range */
+        /* process the results when pingTime is within range */
         if (pingTime>lowRangeA && pingTime<highRangeA)
         {
           /* determine new value */
@@ -479,8 +487,11 @@ void MODEplay()
           if (newValA<lowValA) newValA=lowValA; if (newValA>highValA) newValA=highValA;
 
           /* send MIDI controller message if value has changed */
-          if (newValA!=oldValA) 
+          if ( (newValA!=oldValA) && (abs(pingTime-pingTimeOldA) > 10 ) )
           {
+            /* set previous value of the pingTime */ 
+            pingTimeOldA = pingTime;
+            
             /* send CC message if TYPE is CC */
             if(value[0][1]==1)
             {
@@ -501,6 +512,9 @@ void MODEplay()
               /* Send noteOn messages for the new chord */
               MIDIchord(value[0][2], 1, newValA, value[0][9]);
 
+              /* Switch noteState to On: notes are sounding */
+              noteStateA = 1;
+
               /* display value on the LCD screen */
               value2string(newValA, valstr, 6);
               lcd.setCursor(13,0); lcd.print(valstr);
@@ -510,7 +524,24 @@ void MODEplay()
 
           /* remember the current value for next cycle */
           oldValA = newValA;
-        }   
+        } 
+        
+        /* process the results when pingTime is out of range */
+        else
+        {
+          /* send Note message if TYPE is NOT and notes are sounding */
+          if( (value[0][1]==2) && (noteStateA==1))
+            {
+              /* Send noteOff messages for the previous chord */
+              MIDIchord(value[0][2], 0, oldValA, value[0][9]);
+
+              /* Switch noteState to Off: notes are no longer sounding */
+              noteStateA = 0;
+
+              /* display value on the LCD screen */
+              lcd.setCursor(13, 0); lcd.print("---");
+            }
+        }
         
       }
 
