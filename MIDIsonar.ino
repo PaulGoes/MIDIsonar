@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 0.8                                                                 */
-/* Date:    07-07-2016                                                           */
+/* Version: 0.9                                                                */
+/* Date:    15-07-2016                                                           */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -36,6 +36,8 @@
 /* v0.8    : Solved bug #3 'Alternating adjacent notes when playing notes' and  */
 /*           solved bug 'No NoteOff Midi message sent when hand is out of       */
 /*           range'.                                                            */
+/*                                                                              */
+/* v0.9    : Implemented play mode for sonar controller B.                      */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -119,7 +121,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v0.8");
+  lcd.print("MIDIsonar   v0.9");
 
   delay(1000);
 
@@ -548,8 +550,77 @@ void MODEplay()
       /* if active, process controller B */
       if(value[1][0]==1)
       {
+        /* send ping and get ping time in microseconds based on average of 3 pings */
+        pingTime = sonarB.ping_median(3);   
 
-      /* to be supplied */
+        /* process the results when pingTime is within range */
+        if (pingTime>lowRangeB && pingTime<highRangeB)
+        {
+          /* determine new value */
+          newValB = int ( (pingTime-lowRangeB) / ( (highRangeB-lowRangeB) / (highValB-lowValB+1) ) );
+
+          /* adjust value for polarity */
+          if (rangePolB == 1) newValB = lowValB + newValB; else newValB = highValB - newValB;
+
+          /* keep value within range in case of rounding errors */
+          if (newValB<lowValB) newValB=lowValB; if (newValB>highValB) newValB=highValB;
+
+          /* send MIDI controller message if value has changed */
+          if ( (newValB!=oldValB) && (abs(pingTime-pingTimeOldB) > 10 ) )
+          {
+            /* set previous value of the pingTime */ 
+            pingTimeOldB = pingTime;
+            
+            /* send CC message if TYPE is CC */
+            if(value[1][1]==1)
+            {
+              /* CC: statusbyte=144+channel, databyte1=controller, databyte2=value */
+              MIDImessage(176+value[1][2]-1, value[1][6], newValB);
+
+              /* display value on the LCD screen */
+              value2string(newValB, valstr, 1);
+              lcd.setCursor(13,1); lcd.print(valstr);
+            }
+
+            /* send Note messages if TYPE is NOT */
+            if(value[1][1]==2)
+            {
+              /* Send noteOff messages for the previous chord */
+              MIDIchord(value[1][2], 0, oldValB, value[1][9]);
+
+              /* Send noteOn messages for the new chord */
+              MIDIchord(value[1][2], 1, newValB, value[1][9]);
+
+              /* Switch noteState to On: notes are sounding */
+              noteStateB = 1;
+
+              /* display value on the LCD screen */
+              value2string(newValB, valstr, 6);
+              lcd.setCursor(13,1); lcd.print(valstr);
+            }
+             
+          }
+
+          /* remember the current value for next cycle */
+          oldValB = newValB;
+        } 
+        
+        /* process the results when pingTime is out of range */
+        else
+        {
+          /* send Note message if TYPE is NOT and notes are sounding */
+          if( (value[1][1]==2) && (noteStateB==1))
+            {
+              /* Send noteOff messages for the previous chord */
+              MIDIchord(value[1][2], 0, oldValB, value[1][9]);
+
+              /* Switch noteState to Off: notes are no longer sounding */
+              noteStateB = 0;
+
+              /* display value on the LCD screen */
+              lcd.setCursor(13, 1); lcd.print("---");
+            }
+        }
         
       }
 
