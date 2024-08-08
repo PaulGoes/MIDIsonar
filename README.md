@@ -1,4 +1,4 @@
 # MIDIsonar
-Project MIDIsonar: a MIDI gesture controller that is based on two HC-SR04 sonar sensors.
+# An Arduino based MIDI Gesture Controller with two HC-SR04 sonar sensors.
 
 
