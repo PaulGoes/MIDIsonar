@@ -51,10 +51,12 @@
 /*           scale is played starting from a specified root note which          */
 /*           determines the key that the scale is played in.                    */
 /*                                                                              */
-/* v2.1    : Added implementation of the MIDI chiords functionality. It is now  */
-/*           possible to select a progressioj to use when playing the chords.   */
-/*           the progression is played starting from a specified root note      */
+/* v2.1    : Added implementation of the MIDI chords functionality. It is now   */
+/*           possible to select a progression to use when playing the chords.   */
+/*           The progression is played starting from a specified root note      */
 /*           which determines the key the progression is played in.             */
+/*                                                                              */
+/* v2.1    : Added implementation of additional MIDI chord progressions.        */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -133,11 +135,16 @@ int scales[12][24] = {
 };
 
 /* initialize the data array with progressions */
-int progs[4][14][2] = {
-  { {0,2} , {2,3} , {4,3} , {5,2} , {7,2} , {9,3} , {11,5} , {12,2} , {14,3} , {16,3} , {17,2} , {19,2} , {21,3} , {23,5} },      /* Major           */
-  { {0,2} , {2,5} , {3,2} , {5,3} , {7,3} , {8,2} , {10,2} , {12,2} , {14,5} , {15,2} , {17,3} , {19,3} , {20,2} , {22,2} },      /* Minor           */
-  { {0,8} , {5,8} , {7,8} , {12,8} , {17,8} , {19,8} , {24,8} , {29,8} , {31,8} , {36,8} , {41,8} , {43,8} , {48,8} , {53,8} },   /* Major Blues 7th */
-  { {0,9} , {5,9} , {7,9} , {12,9} , {17,9} , {19,9} , {24,9} , {29,9} , {31,9} , {36,9} , {41,9} , {43,9} , {48,9} , {53,9} }    /* Minor Blues 7th */
+int progs[9][14][2] = {
+  { {0,2} , {2,3} , {4,3} , {5,2} , {7,2} , {9,3} , {11,5} , {12,2} , {14,3} , {16,3} , {17,2} , {19,2} , {21,3} , {23,5} },                    /* Major           */
+  { {0,2} , {2,5} , {3,2} , {5,3} , {7,3} , {8,2} , {10,2} , {12,2} , {14,5} , {15,2} , {17,3} , {19,3} , {20,2} , {22,2} },                    /* Minor           */
+  { {0,8} , {5,8} , {7,8} , {12,8} , {17,8} , {19,8} , {24,8} , {29,8} , {31,8} , {36,8} , {41,8} , {43,8} , {48,8} , {53,8} },                 /* Major Blues 7th */
+  { {0,10} , {5,10} , {7,10} , {12,10} , {17,10} , {19,10} , {24,10} , {29,10} , {31,10} , {36,10} , {41,10} , {43,10} , {48,10} , {53,10} } ,  /* Minor Blues 7th */
+  { {0,2} , {5,2} , {7,2} , {9,3} , {12,2} , {17,2} , {19,2} , {21,3} , {24,2} , {29,2} , {31,2} , {33,3} , {36,2} , {41,2} } ,                 /* Pop             */
+  { {0,9} , {2,10} , {7,8} , {12,9} , {14,10} , {19,8} , {24,9} , {26,10} , {31,8} , {36,9} , {38,10} , {43,8} , {48,9} , {50,10} } ,           /* Jazz            */
+  { {0,2} , {5,2} , {10,2} , {12,2} , {17,2} , {22,2} , {24,2} , {29,2} , {34,2} , {36,2} , {41,2} , {46,2} , {48,2} , {53,2} } ,               /* Modal           */
+  { {0,2} , {2,3} , {4,3} , {5,2} , {7,2} , {9,3} , {11,5} , {12,2} , {14,3} , {16,3} , {17,2} , {19,2} , {21,3} , {23,5} } ,                   /* Gospel          */
+  { {0,2} , {4,3} , {5,3} , {7,3} , {9,2} , {12,2} , {16,3} , {17,3} , {19,3} , {21,2} , {24,2} , {28,3} , {29,3} , {31,3} }                    /* Pachelbel       */
 };
 
 /* ---------------------------------------------------------------------------- */
@@ -164,7 +171,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v2.1");
+  lcd.print("MIDIsonar   v2.2");
 
   delay(1000);
 
@@ -416,7 +423,7 @@ void MODEsetup()
                        break;
 			        /* CHORD PROGRESSION */
               case 12: temp_val = temp_val + 1;
-                       if(temp_val == 5) temp_val = 1; /* wrap around */
+                       if(temp_val == 10) temp_val = 1; /* wrap around */
                        break;
               /* CHORD ROOT */
               case 13: temp_val = temp_val + 1;
@@ -517,7 +524,7 @@ void MODEsetup()
                        break;
 			        /* CHORD PROGRESSION */
               case 12: temp_val = temp_val - 1;
-                       if(temp_val == 0) temp_val = 4; /* wrap around */
+                       if(temp_val == 0) temp_val = 9; /* wrap around */
                        break;
               /* CHORD ROOT */
               case 13: temp_val = temp_val - 1;
@@ -1002,75 +1009,12 @@ void value2string(int value, char *valstr, int convtype)
     if(value==2) sprintf(valstr, "MIN");
     if(value==3) sprintf(valstr, "MAB");
     if(value==4) sprintf(valstr, "MIB");
+    if(value==5) sprintf(valstr, "POP");
+    if(value==6) sprintf(valstr, "JAZ");
+    if(value==7) sprintf(valstr, "MOD");
+    if(value==8) sprintf(valstr, "GSP");
+    if(value==9) sprintf(valstr, "PBL");
   }
-  
-} /* End of value2string */
-
-
-/*void value2string(int value, char *valstr, int convtype)
-{
-    switch(convtype)
-    {
-	    case 1:
-        lcd.setCursor(0,0); lcd.print("1");
-        sprintf(valstr, "%3d", value);
-        break;
-      case 2:
-        lcd.setCursor(0,0); lcd.print("2");
-        if(value==0) sprintf(valstr, "OFF");
-        if(value==1) sprintf(valstr, " ON");
-        break;
-      case 3:
-        lcd.setCursor(0,0); lcd.print("3");
-        if(value==1) sprintf(valstr, " CC");
-        if(value==2) sprintf(valstr, "NOT");
-        if(value==3) sprintf(valstr, "CHD");
-        break;
-      case 4:
-        lcd.setCursor(0,0); lcd.print("4");
-        if(value==0) sprintf(valstr, "NEG");
-        if(value==1) sprintf(valstr, "POS");
-        break;
-      case 5:
-        lcd.setCursor(0,0); lcd.print("5");
-        if(value==1) sprintf(valstr, "CHR");
-        if(value==2) sprintf(valstr, "MAJ");
-        if(value==3) sprintf(valstr, "MIN");
-        if(value==4) sprintf(valstr, "MMI");
-        if(value==5) sprintf(valstr, "HMI");
-        if(value==6) sprintf(valstr, "WHL");
-        if(value==7) sprintf(valstr, "MAB");
-        if(value==8) sprintf(valstr, "MIB");
-		    if(value==9) sprintf(valstr, "MA5");
-		    if(value==10) sprintf(valstr, "MI5");
-		    if(value==11) sprintf(valstr, "8WH");
-		    if(value==12) sprintf(valstr, "8HW");
-        break;
-      case 6:
-        lcd.setCursor(0,0); lcd.print("6");
-        int midiNote = value % 12;
-        int midiOct = (value / 12) - 1;
-        if(midiNote==0) sprintf(valstr, " C%1d", midiOct);
-        if(midiNote==1) sprintf(valstr, "C#%1d", midiOct);
-        if(midiNote==2) sprintf(valstr, " D%1d", midiOct);
-        if(midiNote==3) sprintf(valstr, "D#%1d", midiOct);
-        if(midiNote==4) sprintf(valstr, " E%1d", midiOct);
-        if(midiNote==5) sprintf(valstr, " F%1d", midiOct);
-        if(midiNote==6) sprintf(valstr, "F#%1d", midiOct);
-        if(midiNote==7) sprintf(valstr, " G%1d", midiOct);
-        if(midiNote==8) sprintf(valstr, "G#%1d", midiOct);
-        if(midiNote==9) sprintf(valstr, " A%1d", midiOct);
-        if(midiNote==10) sprintf(valstr, "A#%1d", midiOct);
-        if(midiNote==11) sprintf(valstr, " B%1d", midiOct);
-        break;
-      case 7:
-        lcd.setCursor(0,0); lcd.print("7");
-        if(value==1) sprintf(valstr, "MAJ");
-        if(value==2) sprintf(valstr, "MIN");
-        if(value==3) sprintf(valstr, "MAB");
-        if(value==4) sprintf(valstr, "MIB");
-        break;
-   }
   
 } /* End of value2string */
 
@@ -1130,6 +1074,12 @@ void MIDIchord(int channel, int notestate, int basenote, int chordtype)
 				    break;
 			    case 8: /* seventh chord */ 
 				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
+				    break;
+          case 9: /* major seventh chord */ 
+				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+11, 100); 
+				    break;
+          case 10: /* minor seventh chord */ 
+				   MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
 				    break;
 			}
 	   }
