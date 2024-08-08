@@ -62,6 +62,11 @@
 /*           possible to select a whether bending up only, bending down only    */
 /*           or bending up and down. In all three settings there is a neutral   */
 /*           zone of configurable size that corresponds to the central pitch.   */
+/*                                                                              */
+/* v2.4    : Enhanced manu handling. When returning to setup it returns to the  */
+/*           previously selected menu item. When selecting NEXT at the last     */
+/*           menu item it selects the first menu item and when selecting PREV   */
+/*           at the first menu item it selects the last menu item.              */ 
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -101,6 +106,10 @@ const int ledPinB = 10;      /* activity LED used for controller B connected to 
 const int potPin1 = 0;       /* potentiometer 1 connected to pin 1 (analog A0) VALUE */
 
 int buttonState = 0;
+
+/* initialize the start menu position */
+int menu_id = 0;        /* menu id of the selected menu item */
+int menu_id_old = 3;    /* menu id of the previous menu item */
 
 /* initialize the Sonars */
 #define triggerPinA   8      /* trigger pin sonar sensor A connected to pin D8 */
@@ -182,7 +191,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v2.3");
+  lcd.print("MIDIsonar   v2.4");
 
   delay(1000);
 
@@ -259,8 +268,8 @@ void MODEsetup()
   lcd.clear();
 
   /* initialize variables */
-  int menu_id = 0;        /* menu id of the selected menu item */
-  int menu_id_old = 3;    /* menu id of the previous menu item */
+  /*int menu_id = 0;        /* menu id of the selected menu item */
+  /*int menu_id_old = 3;    /* menu id of the previous menu item */
   int screen_id;          /* screen id of the selected menu item */
   int screen_id_old;      /* screen id of the previous menu item */
 
@@ -291,7 +300,8 @@ void MODEsetup()
     if(array_pos>5) array_pos=array_pos+3*(value[controller_id][1]-1);
 
     /* redraw the complete screen if the selected menu item is on a new setup screen */
-    if(screen_id != screen_id_old)
+    /*if(screen_id != screen_id_old)*/
+    if(0==0)
        {
          lcd.noCursor();
          lcd.clear();
@@ -337,32 +347,32 @@ void MODEsetup()
       /* check if MENU PREV button is pressed */
       if(digitalRead(buttonPin2) == HIGH) 
       {
-        if(menu_id>0) 
-        {
-          /* decrease the menu_id */
-          menu_id_old=menu_id; 
-          menu_id--;
-          /* wait until MENU PREV button is released */
-          do
-            delay(20);
-          while(digitalRead(buttonPin2) == HIGH);
-        } 
+        /* decrease the menu_id */
+        menu_id_old=menu_id; 
+        menu_id--;
+        if(menu_id==-1) menu_id=17;
+        
+        /* wait until MENU PREV button is released */
+        do
+          delay(20);
+        while(digitalRead(buttonPin2) == HIGH);
+         
         break;
       }
 
       /* check if MENU NEXT button is pressed */
       if(digitalRead(buttonPin3) == HIGH) 
       {
-        if(menu_id<17) 
-        {
-          /* increase the menu_id */
-          menu_id_old=menu_id; 
-          menu_id++;
-          /* wait until MENU NEXT button is released */
-          do
-            delay(20);
-          while(digitalRead(buttonPin3) == HIGH);
-        }
+        /* increase the menu_id */
+        menu_id_old=menu_id; 
+        menu_id++;
+        if(menu_id==18) menu_id=0;
+
+        /* wait until MENU NEXT button is released */
+        do
+          delay(20);
+        while(digitalRead(buttonPin3) == HIGH);
+
         break;
       }
 
