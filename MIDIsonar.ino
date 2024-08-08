@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 2.0                                                                */
-/* Date:    19-02-2024                                                           */
+/* Version: 3.0                                                                */
+/* Date:    18-03-2024                                                           */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -71,15 +71,18 @@
 /* v2.5    : Solved issue with the MIDI chord progressions. The new chord was   */
 /*           played with the wrong chord type and the note off was played with  */
 /*           the correct chord type resulting in notes sustaining.              */
+/*                                                                              */
+/* v3.0    : Added MIDI reset when leaving play mode. Notes that are sounding   */
+/*           are released and the pitch bend is reset to neutral position.      */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
-/* Arduino Pin connections:                                                     */
-/*    TXD - MIDI OUT Serial               D10 - Sonar A Led                     */
+/* Arduino UNO Pin connections:                                                 */
+/*    TXD - MIDI OUT Serial               D10 - Sonar B Led                     */
 /*    D2  - LCD Bit 7 (pin 14)            D11 - LCD Clock (pin 6)               */
 /*    D3  - LCD Bit 6 (pin 13)            D12 - LCD Reg Select (pin 4)          */    
-/*    D4  - LCD Bit 5 (pin 12)            D13 - Sonar B Led                     */
-/*    D5  - LCD Bit 4 (pin 11)            A0  - Potmeter Value                  */
+/*    D4  - LCD Bit 5 (pin 12)            D13 - Sonar A Led                     */
+/*    D5  - LCD Bit 4 (pin 11)            A0  - Potmeter Value (deprecated)     */
 /*    D8  - Sonar A Trigger               A1  - Button MODE SELECT              */
 /*    D9  - Sonar A Echo                  A2  - Button MENU PREV                */
 /*    D6  - Sonar B Trigger               A3  - Button MENU NEXT                */
@@ -195,7 +198,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v2.5");
+  lcd.print("MIDIsonar   v3.0");
 
   delay(1000);
 
@@ -1098,9 +1101,26 @@ void MODEplay()
         /* switch off the controller activity LEDs */
         digitalWrite(ledPinA, LOW); digitalWrite(ledPinB, LOW);
 
-        /* send noteOff messages for the previous chord if type = NOT */
-        if(value[0][1]==2) MIDIchord(value[0][2], 0, oldValA, value[0][9]);
-        if(value[1][1]==2) MIDIchord(value[1][2], 0, oldValB, value[1][9]);
+        /* send noteOff messages for the previous note if type = NOTE */
+        if(value[0][1]==2) {oldNoteA=value[0][10]+scales[value[0][9]-1][oldValA]; MIDIchord(value[0][2], 0, oldNoteA, 1);}
+        if(value[1][1]==2) {oldNoteB=value[1][10]+scales[value[1][9]-1][oldValB]; MIDIchord(value[1][2], 0, oldNoteB, 1);}   
+			        
+        /* send noteOff messages for the previous chord if type = CHORD */
+        if(value[0][1]==3) 
+        { oldNoteA=value[0][13]+progs[value[0][12]-1][oldValA][0];
+          oldChordA=progs[value[0][12]-1][oldValA][1];
+			    MIDIchord(value[0][2], 0, oldNoteA, oldChordA);
+        }
+        if(value[1][1]==3)
+        {
+          oldNoteB=value[1][13]+progs[value[1][12]-1][oldValB][0];
+			    oldChordB=progs[value[1][12]-1][oldValB][1];
+			    MIDIchord(value[1][2], 0, oldNoteB, oldChordB);
+        }
+
+			  /* reset pitchbend to neutral */
+        if(value[0][1]==4) {MIDIpitchbend(value[0][2], 8192);}
+        if(value[1][1]==4) {MIDIpitchbend(value[1][2], 8192);}
 
         return;
       }
