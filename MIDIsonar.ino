@@ -63,10 +63,14 @@
 /*           or bending up and down. In all three settings there is a neutral   */
 /*           zone of configurable size that corresponds to the central pitch.   */
 /*                                                                              */
-/* v2.4    : Enhanced manu handling. When returning to setup it returns to the  */
+/* v2.4    : Enhanced menu handling. When returning to setup it returns to the  */
 /*           previously selected menu item. When selecting NEXT at the last     */
 /*           menu item it selects the first menu item and when selecting PREV   */
 /*           at the first menu item it selects the last menu item.              */ 
+/*                                                                              */
+/* v2.5    : Solved issue with the MIDI chord progressions. The new chord was   */
+/*           played with the wrong chord type and the note off was played with  */
+/*           the correct chord type resulting in notes sustaining.              */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -191,7 +195,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v2.4");
+  lcd.print("MIDIsonar   v2.5");
 
   delay(1000);
 
@@ -806,7 +810,7 @@ void MODEplay()
               /* Send noteOn messages for the new chord */
               newNoteA=value[0][13]+progs[value[0][12]-1][newValA][0];
 			        newChordA=progs[value[0][12]-1][newValA][1];
-			        MIDIchord(value[0][2], 1, newNoteA, oldChordA);
+			        MIDIchord(value[0][2], 1, newNoteA, newChordA);
 
               /* Switch noteState to On: notes are sounding */
               noteStateA = 1;
@@ -982,7 +986,7 @@ void MODEplay()
               /* Send noteOn messages for the new chord */
               newNoteB=value[1][13]+progs[value[1][12]-1][newValB][0];
 			        newChordB=progs[value[1][12]-1][newValB][1];
-			        MIDIchord(value[1][2], 1, newNoteB, oldChordB);
+			        MIDIchord(value[1][2], 1, newNoteB, newChordB);
 
               /* Switch noteState to On: notes are sounding */
               noteStateB = 1;
@@ -1248,38 +1252,15 @@ void MIDIchord(int channel, int notestate, int basenote, int chordtype)
 		   MIDImessage(statusbyte, basenote, 100);
 
 		   /* send additional notes if a CHORD is played */
-		   switch(chordtype)
-			 {
-			    case 1: /* single note */
-				    break;
-			    case 2: /* major chord */ 
-				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100);
-				    break;
-			    case 3: /* minor chord */
-				   MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100);
-				    break;
-			    case 4: /* augmented chord */ 
-				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+8, 100); 
-				    break;
-			    case 5: /* diminished chord */ 
-				   MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+6, 100); 
-				    break;
-			    case 6: /* suspended chord */ 
-				   MIDImessage(statusbyte, basenote+5, 100); MIDImessage(statusbyte, basenote+7, 100); 
-				    break;
-			    case 7: /* octave */ 
-				   MIDImessage(statusbyte, basenote+12, 100); 
-				    break;
-			    case 8: /* seventh chord */ 
-				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
-				    break;
-          case 9: /* major seventh chord */ 
-				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+11, 100); 
-				    break;
-          case 10: /* minor seventh chord */ 
-				   MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
-				    break;
-			}
+       if(chordtype==2) {MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100);}
+       if(chordtype==3) {MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100);}
+       if(chordtype==4) {MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+8, 100);}
+       if(chordtype==5) {MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+6, 100);}
+       if(chordtype==6) {MIDImessage(statusbyte, basenote+5, 100); MIDImessage(statusbyte, basenote+7, 100);}
+       if(chordtype==7) {MIDImessage(statusbyte, basenote+12, 100);}
+       if(chordtype==8) {MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100);}
+       if(chordtype==9) {MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+11, 100);}
+       if(chordtype==10) {MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100);}
 	   }
 	}
 	
