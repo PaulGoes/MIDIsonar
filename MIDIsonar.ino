@@ -56,7 +56,12 @@
 /*           The progression is played starting from a specified root note      */
 /*           which determines the key the progression is played in.             */
 /*                                                                              */
-/* v2.1    : Added implementation of additional MIDI chord progressions.        */
+/* v2.2    : Added implementation of additional MIDI chord progressions.        */
+/*                                                                              */
+/* v2.3    : Added implementation of the MIDI pitchbend functionality. It is    */
+/*           possible to select a whether bending up only, bending down only    */
+/*           or bending up and down. In all three settings there is a neutral   */
+/*           zone of configurable size that corresponds to the central pitch.   */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -107,16 +112,22 @@ NewPing sonarA(triggerPinA, echoPinA, 100);   /* NewPing setup of sonar A pins a
 NewPing sonarB(triggerPinB, echoPinB, 100);   /* NewPing setup of sonar A pins and maximum distance */
 
 /* initialize the data array with default values */
-int value[2][15] = {
-  { 1, 1, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
-  { 1, 2, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
+int value[2][18] = {
+  { 1, 1, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
+  { 1, 2, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
 };
 
 /* initialize the data array with valuetypes */
-int type[15] = { 2, 3, 1, 1, 1, 4, 1, 1, 1, 5, 6, 1, 7, 6, 1 };
+int type[18] = { 2, 3, 1, 1, 1, 4, 1, 1, 1, 5, 6, 1, 7, 6, 1, 8, 9, 10 };
 
 /* initialize the string array with menu names */
-char* menu[] = { "ACTV", "TYPE", "CHNL", "LDST", "HDST", "POLR", "CNTR", "LVAL", "HVAL", "SCAL", "ROOT", "RANG", "PROG", "ROOT", "RANG" };
+char* menu[] = { "ACTV", "TYPE", "CHNL", "LDST", "HDST", "POLR", "CNTR", "LVAL", "HVAL", "SCAL", "ROOT", "RANG", "PROG", "ROOT", "RANG", "TYPE", "NTRL", "PBFX" };
+
+/* initialize the data array with ping medians */
+int pingmedian[4] = { 2, 3, 3, 2 };
+
+/* initalize the data array with wiggle room */
+int wiggleroom[4] = { 10, 10, 10, 0 };
 
 /* initialize the data array with scales */
 int scales[12][24] = {
@@ -171,7 +182,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v2.2");
+  lcd.print("MIDIsonar   v2.3");
 
   delay(1000);
 
@@ -379,7 +390,7 @@ void MODEsetup()
                       break;
               /* TYPE */
               case  1: temp_val = temp_val + 1;
-                       if(temp_val == 4) temp_val = 1; /* wrap around */
+                       if(temp_val == 5) temp_val = 1; /* wrap around */
                        break;
               /* CHNL */         
               case  2: temp_val = temp_val + 1;
@@ -433,6 +444,18 @@ void MODEsetup()
               case 14: temp_val = temp_val + 1;
                        if(temp_val == 15) temp_val = 14; /* no wrap around */
                        break;
+              /* PBND TYPE */
+              case 15: temp_val = temp_val + 1;
+                       if(temp_val == 4) temp_val = 1; /* wrap around */
+                       break;
+              /* PBND NTRL */
+              case 16: temp_val = temp_val + 1;
+                       if(temp_val == 4) temp_val = 1; /* wrap around */
+                       break;
+              /* PBND PBFX */
+              case 17: temp_val = temp_val + 1;
+                       if(temp_val == 3) temp_val = 1; /* wrap around */
+                       break;
             }
 
             /* store the changed value in the value array */
@@ -480,7 +503,7 @@ void MODEsetup()
                       break;
               /* TYPE */
               case  1: temp_val = temp_val - 1;
-                       if(temp_val == 0) temp_val = 3; /* wrap around */
+                       if(temp_val == 0) temp_val = 4; /* wrap around */
                        break;
               /* CHNL */         
               case  2: temp_val = temp_val - 1;
@@ -533,6 +556,18 @@ void MODEsetup()
               /* CHORD RANG */
               case 14: temp_val = temp_val - 1;
                        if(temp_val == 0) temp_val = 1; /* no wrap around */
+                       break;
+              /* PBND TYPE */
+              case 15: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 3; /* wrap around */
+                       break;
+              /* PBND NTRL */
+              case 16: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 3; /* wrap around */
+                       break;
+              /* PBND PBFX */
+              case 17: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 2; /* wrap around */
                        break;
             }
 
@@ -587,11 +622,16 @@ void MODEplay()
   int highValA;           /* high value for controller A*/
   int newValA = 0;        /* current value measured for controller A */
   int oldValA = 0;        /* previous value measured for controller A */
-  int noteStateA = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
+  int noteStateA = 0;     /* state of the notes when type=NOTE: 0=off, 1=on */
   int newNoteA = 0;       /* current note for controller A */
   int oldNoteA = 0;       /* previous note for controller A */
-  int newChordA = 0;	  /* current chord for controller A */
-  int oldChordA = 0;	  /* previous chord for controller A */  
+  int newChordA = 0;	    /* current chord for controller A */
+  int oldChordA = 0;	    /* previous chord for controller A */
+  int pbValA = 0;         /* calculated pitchbend value for controller A */
+  int pbRangeA = 0;       /* calculated pitchbend range for controller A */
+  int pbDeltaA = 0;       /* calculated pitchbend delta for controller A */
+  int pbDirA = 0;         /* calculated pitchbend direction for controller A */
+  int pbStateA = 0;       /* state of the pitchbend when type=PBND: 0=neutral, 1=bend */
 
   int pingTimeOldB = 0;   /* previous ping time for controller B */
   int lowRangeB;          /* low range ping controller B in microseconds */
@@ -601,16 +641,22 @@ void MODEplay()
   int highValB;           /* high value for controller B*/
   int newValB = 0;        /* current value measured for controller B */
   int oldValB = 0;        /* previous value measured for controller B */
-  int noteStateB = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
+  int noteStateB = 0;     /* State of the notes when type=NOTE: 0=off, 1=on */
   int newNoteB = 0;       /* current note for controller B */
   int oldNoteB = 0;       /* previous note for controller B */
-  int newChordB = 0;	  /* current chord for controller B */
-  int oldChordB = 0;	  /* previous chord for controller B */  
+  int newChordB = 0;	    /* current chord for controller B */
+  int oldChordB = 0;	    /* previous chord for controller B */
+  int pbValB = 0;         /* calculated pitchbend value for controller B */
+  int pbRangeB = 0;       /* calculated pitchbend range for controller B */
+  int pbDeltaB = 0;       /* calculated pitchbend delta for controller B */
+  int pbDirB = 0;         /* calculated pitchbend direction for controller B */
+  int pbStateB = 0;       /* state of the pitchbend when type=PBND: 0=neutral, 1=bend */
 
   int pingTime;           /* measured ping time between trigger and echo */
   int displayTime = 0;    /* display update timer to avoid value flickering */
 
-  char* valstr = "   ";       /* temporary string used to construct formatted string values */
+  char* valstr = "   ";   /* temporary string used to construct formatted string values */
+  char* pbstr = "   ";    /* temporary string used to construct formatted string values */
 
   /* display the static part of the mode play screen and switch on LED's */
   for(int counter=0; counter<2; counter++)
@@ -639,6 +685,7 @@ void MODEplay()
       if(value[counter][1]==1) value2string(value[counter][6], valstr, type[6]);
       if(value[counter][1]==2) value2string(value[counter][9], valstr, type[9]);
       if(value[counter][1]==3) value2string(value[counter][12], valstr, type[12]);
+      if(value[counter][1]==4) value2string(value[counter][15], valstr, type[15]);
       lcd.setCursor(6,counter); lcd.print(valstr);
 
       /* display the controller CHNL */
@@ -657,28 +704,41 @@ void MODEplay()
   /* determine the polarity */
   rangePolA = value[0][5]; 
   rangePolB = value[1][5];
-  
+
   /* determine lowval and highval depending on TYPE */
-  if(value[0][1]==1) {lowValA=value[0][7]; highValA=value[0][8];}   /* controller A - CTRL */
-  if(value[0][1]==2) {lowValA=0; highValA=value[0][11];}            /* controller A - NOTE */
-  if(value[0][1]==3) {lowValA=0; highValA=value[0][14];}            /* controller A - CHRD */
-  if(value[1][1]==1) {lowValB=value[1][7]; highValB=value[1][8];}   /* controller B - CTRL */
-  if(value[1][1]==2) {lowValB=0; highValB=value[1][11];}            /* controller B - NOTE */
-  if(value[1][1]==3) {lowValB=0; highValB=value[1][14];}            /* controller B - CTRL */
-  
+  if(value[0][1]==1) {lowValA=value[0][7]; highValA=value[0][8];}                       /* controller A - CTRL        */
+  if(value[0][1]==2) {lowValA=0; highValA=value[0][11];}                                /* controller A - NOTE        */
+  if(value[0][1]==3) {lowValA=0; highValA=value[0][14];}                                /* controller A - CHRD        */
+  if(value[0][1]==4 && value[0][15]==1) {lowValA=0; highValA=10000+value[0][16]*819;}   /* controller A - PBND UP     */
+  if(value[0][1]==4 && value[0][15]==2) {lowValA=0; highValA=10000+value[0][16]*819;}   /* controller A - PBND DWN    */
+  if(value[0][1]==4 && value[0][15]==3) {lowValA=0; highValA=20000+value[0][16]*819;}   /* controller A - PBND UP&DWN */
+  if(value[1][1]==1) {lowValB=value[1][7]; highValB=value[1][8];}                       /* controller B - CTRL        */
+  if(value[1][1]==2) {lowValB=0; highValB=value[1][11];}                                /* controller B - NOTE        */
+  if(value[1][1]==3) {lowValB=0; highValB=value[1][14];}                                /* controller B - CTRL        */
+  if(value[1][1]==4 && value[1][15]==1) {lowValB=0; highValB=10000+value[0][16]*819;}   /* controller B - PBND UP     */
+  if(value[1][1]==4 && value[1][15]==2) {lowValB=0; highValB=10000+value[0][16]*819;}   /* controller B - PBND DWN    */
+  if(value[1][1]==4 && value[1][15]==3) {lowValB=0; highValB=20000+value[0][16]*819;}   /* controller B - PBND UP&DWN */
+
   do 
   {
       /* if active, process controller A */
       if(value[0][0]==1)
       {
-        /* send ping and get ping time in microseconds based on average of 3 pings */
-        pingTime = sonarA.ping_median(3);   
+        /* send ping and get ping time in microseconds based on configured average depending on the TYPE */
+        pingTime = sonarA.ping_median(pingmedian[value[0][1]-1]);
 
         /* process the results when pingTime is within range */
         if (pingTime>lowRangeA && pingTime<highRangeA)
         {
           /* determine new value */
-          newValA = int ( (pingTime-lowRangeA) / ( (highRangeA-lowRangeA) / (highValA-lowValA+1) ) );
+          if(value[0][1]==4) /* TYPE = PBND */
+          {
+            newValA = int ( (pingTime-lowRangeA) * ( (highValA-lowValA+1) / (highRangeA-lowRangeA) ) );
+          }
+          else /* TYPE =  CNTRL or NOTE or CHORD */
+          {
+            newValA = int ( (pingTime-lowRangeA) / ( (highRangeA-lowRangeA) / (highValA-lowValA+1) ) );
+          }
 
           /* adjust value for polarity */
           if (rangePolA == 1) newValA = lowValA + newValA; else newValA = highValA - newValA;
@@ -687,7 +747,7 @@ void MODEplay()
           if (newValA<lowValA) newValA=lowValA; if (newValA>highValA) newValA=highValA;
 
           /* send MIDI controller message if value has changed */
-          if ( (newValA!=oldValA) && (abs(pingTime-pingTimeOldA) > 10 ) )
+          if ( (newValA!=oldValA) && (abs(pingTime-pingTimeOldA) > wiggleroom[value[0][1]-1] ) )
           {
             /* set previous value of the pingTime */ 
             pingTimeOldA = pingTime;
@@ -744,6 +804,56 @@ void MODEplay()
               /* display value on the LCD screen */
               value2string(newNoteA, valstr, 6);
               lcd.setCursor(13,0); lcd.print(valstr);
+            }
+
+            /* send Pitch Bend messages if TYPE is PBND */
+            if(value[0][1]==4)
+            {
+              /* adjust for neutral zones */
+              if(value[0][15]==1) /* pitchbend UP */
+              {
+                pbRangeA = 819 * value[0][16]; pbDirA = 1;
+                if(newValA <= pbRangeA) pbDeltaA = 0; else pbDeltaA = newValA - pbRangeA;
+              }
+              if(value[0][15]==2) /* pitchbend DOWN */
+              {
+                pbRangeA = 819 * value[0][16]; pbDirA = -1;
+                if(newValA <= pbRangeA) pbDeltaA = 0; else pbDeltaA = newValA - pbRangeA;
+              }
+              if(value[0][15]==3) /* pitchbend UP&DOWN */
+              {
+                pbRangeA = 819 * value[0][16];
+                if((newValA >= 10900-pbRangeA) && (newValA <= 10900+pbRangeA)) {pbDeltaA = 0; pbDirA=1;} 
+                if(newValA < 10900-pbRangeA) {pbDeltaA = 10900-pbRangeA-newValA; pbDirA=-1;}
+                if(newValA > 10900+pbRangeA) {pbDeltaA = newValA-pbRangeA-10900; pbDirA=1;}
+              }
+
+              /* process pitchbend effects */
+              if(value[0][17] == 2) /* pitchbend in discrete steps */
+              {
+                pbDeltaA = (pbDeltaA / 256) * 256;
+              }
+              
+              /* finalize pitchbend value */
+              pbValA = 8192 + pbDirA * pbDeltaA;
+              if(pbValA < 0) pbValA = 0;
+              if(pbValA > 16383) pbValA = 16383;
+
+              /* Send PB message */
+			        MIDIpitchbend(value[0][2], pbValA);
+
+              /* Set pbState to 0 if neutral and 1 if bend */
+              if(pbValA == 8192) pbStateA=0; else pbStateA=1;
+
+              /* display value on the LCD screen */
+              if(pbValA<2730) pbstr = "---";
+              else if(pbValA<5460) pbstr = " --";
+              else if(pbValA<8192) pbstr = "  -";
+              else if(pbValA>13650) pbstr = "+++";
+              else if(pbValA>10920) pbstr = "++ ";
+              else if(pbValA>8192) pbstr = "+  ";
+              else pbstr = "000";
+              lcd.setCursor(13,0); lcd.print(pbstr);
             }  
           }
 
@@ -770,7 +880,7 @@ void MODEplay()
             }
 			
 		      /* send Note Off message if TYPE is CHORD and notes are sounding */
-          if( (value[0][1]==3) && (noteStateA==1))
+          if((value[0][1]==3) && (noteStateA==1))
             {
               /* Send noteOff messages for the previous chord */
               oldNoteA=value[0][13]+progs[value[0][12]-1][oldValA][0];
@@ -790,14 +900,21 @@ void MODEplay()
       /* if active, process controller B */
       if(value[1][0]==1)
       {
-        /* send ping and get ping time in microseconds based on average of 3 pings */
-        pingTime = sonarB.ping_median(3);   
+        /* send ping and get ping time in microseconds based on configured average depending on the TYPE */
+        pingTime = sonarB.ping_median(pingmedian[value[1][1]-1]);   
 
         /* process the results when pingTime is within range */
         if (pingTime>lowRangeB && pingTime<highRangeB)
         {
           /* determine new value */
-          newValB = int ( (pingTime-lowRangeB) / ( (highRangeB-lowRangeB) / (highValB-lowValB+1) ) );
+          if(value[1][1]==4) /* TYPE = PBND */
+          {
+            newValB = int ( (pingTime-lowRangeB) * ( (highValB-lowValB+1) / (highRangeB-lowRangeB) ) );
+          }
+          else /* TYPE =  CNTRL or NOTE or CHORD */
+          {
+            newValB = int ( (pingTime-lowRangeB) / ( (highRangeB-lowRangeB) / (highValB-lowValB+1) ) );
+          }
 
           /* adjust value for polarity */
           if (rangePolB == 1) newValB = lowValB + newValB; else newValB = highValB - newValB;
@@ -806,7 +923,7 @@ void MODEplay()
           if (newValB<lowValB) newValB=lowValB; if (newValB>highValB) newValB=highValB;
 
           /* send MIDI controller message if value has changed */
-          if ( (newValB!=oldValB) && (abs(pingTime-pingTimeOldB) > 10 ) )
+          if ( (newValB!=oldValB) && (abs(pingTime-pingTimeOldB) > wiggleroom[value[1][1]-1] ) )
           {
             /* set previous value of the pingTime */ 
             pingTimeOldB = pingTime;
@@ -864,6 +981,56 @@ void MODEplay()
               value2string(newNoteB, valstr, 6);
               lcd.setCursor(13,1); lcd.print(valstr);
 			      }
+
+            /* send Pitch Bend messages if TYPE is PBND */
+            if(value[1][1]==4)
+            {
+              /* adjust for neutral zones */
+              if(value[1][15]==1) /* pitchbend UP */
+              {
+                pbRangeB = 819 * value[1][16]; pbDirB = 1;
+                if(newValB <= pbRangeB) pbDeltaB = 0; else pbDeltaB = newValB - pbRangeB;
+              }
+              if(value[1][15]==2) /* pitchbend DOWN */
+              {
+                pbRangeB = 819 * value[1][16]; pbDirB = -1;
+                if(newValB <= pbRangeB) pbDeltaB = 0; else pbDeltaB = newValB - pbRangeB;
+              }
+              if(value[1][15]==3) /* pitchbend UP&DOWN */
+              {
+                pbRangeB = 819 * value[1][16];
+                if((newValB >= 10900-pbRangeB) && (newValB <= 10900+pbRangeB)) {pbDeltaB = 0; pbDirB=1;} 
+                if(newValB < 10900-pbRangeB) {pbDeltaB = 10900-pbRangeB-newValB; pbDirB=-1;}
+                if(newValB > 10900+pbRangeB) {pbDeltaB = newValB-pbRangeB-10900; pbDirB=1;}
+              }
+
+              /* process pitchbend effects */
+              if(value[1][17] == 2) /* pitchbend in discrete steps */
+              {
+                pbDeltaB = (pbDeltaB / 1024) * 1024;
+              }
+              
+              /* finalize pitchbend value */
+              pbValB = 8192 + pbDirB * pbDeltaB;
+              if(pbValB < 0) pbValB = 0;
+              if(pbValB > 16383) pbValB = 16383;
+
+              /* Send PB message */
+			        MIDIpitchbend(value[1][2], pbValB);
+
+              /* Set pbState to 0 if neutral and 1 if bend */
+              if(pbValB == 8192) pbStateB=0; else pbStateB=1;
+
+              /* display value on the LCD screen */
+              if(pbValB<2730) pbstr = "---";
+              else if(pbValB<5460) pbstr = " --";
+              else if(pbValB<8192) pbstr = "  -";
+              else if(pbValB>13650) pbstr = "+++";
+              else if(pbValB>10920) pbstr = "++ ";
+              else if(pbValB>8192) pbstr = "+  ";
+              else pbstr = "000";
+              lcd.setCursor(13,1); lcd.print(pbstr);
+            } 
           }
 
           /* remember the current value for next cycle */
@@ -961,6 +1128,7 @@ void value2string(int value, char *valstr, int convtype)
     if(value==1) sprintf(valstr, " CC");
     if(value==2) sprintf(valstr, "NOT");
     if(value==3) sprintf(valstr, "CHD");
+    if(value==4) sprintf(valstr, " PB");
   }
   
   if(convtype == 4)
@@ -1014,6 +1182,26 @@ void value2string(int value, char *valstr, int convtype)
     if(value==7) sprintf(valstr, "MOD");
     if(value==8) sprintf(valstr, "GSP");
     if(value==9) sprintf(valstr, "PBL");
+  }
+
+  if(convtype == 8)
+  {
+    if(value==1) sprintf(valstr, " UP");
+    if(value==2) sprintf(valstr, "DWN");
+    if(value==3) sprintf(valstr, "U&D");
+  }
+
+  if(convtype == 9)
+  {
+    if(value==1) sprintf(valstr, "SML");
+    if(value==2) sprintf(valstr, "MED");
+    if(value==3) sprintf(valstr, "LRG");
+  }
+
+  if(convtype == 10)
+  {
+    if(value==1) sprintf(valstr, "FLW");
+    if(value==2) sprintf(valstr, "STP");
   }
   
 } /* End of value2string */
@@ -1086,6 +1274,32 @@ void MIDIchord(int channel, int notestate, int basenote, int chordtype)
 	}
 	
 } /* End of MIDIchord */
+
+
+/* ---------------------------------------------------------------------------- */
+/* MIDIpitchbend():                                                             */
+/* Function:     Creates MIDI pitchbend                                         */
+/* Arguments:    channel       : MIDI channel                                   */
+/*               pbvalue       : pitch bend value to send                       */
+/* ---------------------------------------------------------------------------- */
+void MIDIpitchbend(int channel, int pbvalue)
+{
+  /* initalize variables */
+  int statusbyte;         /* statusbyte to send to MIDI */
+  int dataMSB;            /* MSB portion of the pitchbend value */
+  int dataLSB;            /* LSB portion of the pitchbend value */
+
+  /* construct statusbyte : 224+channel */
+  statusbyte = 224+channel-1;
+
+  /* get MSB and LSB values from the pitchbend value */
+  dataMSB = pbvalue/128; if(dataMSB>127) dataMSB=127;
+  dataLSB = pbvalue%128; if(dataLSB>127) dataLSB=127;
+
+  /* send the pitchbend message to MIDI */
+  MIDImessage(statusbyte, dataLSB, dataMSB);
+
+} /* End of MIDIpitchbend */
 
 
 /* ---------------------------------------------------------------------------- */
