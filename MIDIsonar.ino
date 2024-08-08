@@ -51,6 +51,10 @@
 /*           scale is played starting from a specified root note which          */
 /*           determines the key that the scale is played in.                    */
 /*                                                                              */
+/* v2.1    : Added implementation of the MIDI chiords functionality. It is now  */
+/*           possible to select a progressioj to use when playing the chords.   */
+/*           the progression is played starting from a specified root note      */
+/*           which determines the key the progression is played in.             */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -101,16 +105,16 @@ NewPing sonarA(triggerPinA, echoPinA, 100);   /* NewPing setup of sonar A pins a
 NewPing sonarB(triggerPinB, echoPinB, 100);   /* NewPing setup of sonar A pins and maximum distance */
 
 /* initialize the data array with default values */
-int value[2][12] = {
-  { 1, 1, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
-  { 1, 2, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
+int value[2][15] = {
+  { 1, 1, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
+  { 1, 2, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
 };
 
 /* initialize the data array with valuetypes */
-int type[12] = { 2, 3, 1, 1, 1, 4, 1, 1, 1, 5, 6, 1 };
+int type[15] = { 2, 3, 1, 1, 1, 4, 1, 1, 1, 5, 6, 1, 7, 6, 1 };
 
 /* initialize the string array with menu names */
-char* menu[] = { "ACTV", "TYPE", "CHNL", "LDST", "HDST", "POLR", "CNTR", "LVAL", "HVAL", "SCAL", "ROOT", "RANG" };
+char* menu[] = { "ACTV", "TYPE", "CHNL", "LDST", "HDST", "POLR", "CNTR", "LVAL", "HVAL", "SCAL", "ROOT", "RANG", "PROG", "ROOT", "RANG" };
 
 /* initialize the data array with scales */
 int scales[12][24] = {
@@ -125,7 +129,15 @@ int scales[12][24] = {
   {  0,  2,  4,  7,  9, 12, 14, 16, 19, 21, 24, 26, 28, 31, 33, 36, 38, 40, 43, 45, 48, 50, 52, 55 },   /* Major Pentatonic     */ 
   {  0,  3,  5,  7, 10, 12, 15, 17, 19, 22, 24, 27, 29, 31, 34, 36, 39, 41, 43, 46, 48, 51, 53, 55 },   /* Minor Pentatonic     */
   {  0,  2,  3,  5,  6,  8,  9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32, 33, 35 },   /* Octatonic Whole Half */
-  {  0,  1,  3,  4,  6,  7,  9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34 }    /* Octatonic Hald Whole */
+  {  0,  1,  3,  4,  6,  7,  9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34 }    /* Octatonic Half Whole */
+};
+
+/* initialize the data array with progressions */
+int progs[4][14][2] = {
+  { {0,2} , {2,3} , {4,3} , {5,2} , {7,2} , {9,3} , {11,5} , {12,2} , {14,3} , {16,3} , {17,2} , {19,2} , {21,3} , {23,5} },      /* Major           */
+  { {0,2} , {2,5} , {3,2} , {5,3} , {7,3} , {8,2} , {10,2} , {12,2} , {14,5} , {15,2} , {17,3} , {19,3} , {20,2} , {22,2} },      /* Minor           */
+  { {0,8} , {5,8} , {7,8} , {12,8} , {17,8} , {19,8} , {24,8} , {29,8} , {31,8} , {36,8} , {41,8} , {43,8} , {48,8} , {53,8} },   /* Major Blues 7th */
+  { {0,9} , {5,9} , {7,9} , {12,9} , {17,9} , {19,9} , {24,9} , {29,9} , {31,9} , {36,9} , {41,9} , {43,9} , {48,9} , {53,9} }    /* Minor Blues 7th */
 };
 
 /* ---------------------------------------------------------------------------- */
@@ -152,7 +164,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v2.0");
+  lcd.print("MIDIsonar   v2.1");
 
   delay(1000);
 
@@ -360,7 +372,7 @@ void MODEsetup()
                       break;
               /* TYPE */
               case  1: temp_val = temp_val + 1;
-                       if(temp_val == 3) temp_val = 1; /* wrap around */
+                       if(temp_val == 4) temp_val = 1; /* wrap around */
                        break;
               /* CHNL */         
               case  2: temp_val = temp_val + 1;
@@ -396,11 +408,23 @@ void MODEsetup()
                        break;
               /* NOTE ROOT */
               case 10: temp_val = temp_val + 1;
-                       if(temp_val == 128) temp_val = 127; /* no wrap around */
+                       if(temp_val == 120) temp_val = 119; /* no wrap around */
                        break;
               /* NOTE RANG */
               case 11: temp_val = temp_val + 1;
                        if(temp_val == 25) temp_val = 24; /* no wrap around */
+                       break;
+			        /* CHORD PROGRESSION */
+              case 12: temp_val = temp_val + 1;
+                       if(temp_val == 5) temp_val = 1; /* wrap around */
+                       break;
+              /* CHORD ROOT */
+              case 13: temp_val = temp_val + 1;
+                       if(temp_val == 120) temp_val = 119; /* no wrap around */
+                       break;
+              /* NOTE RANG */
+              case 14: temp_val = temp_val + 1;
+                       if(temp_val == 15) temp_val = 14; /* no wrap around */
                        break;
             }
 
@@ -410,7 +434,7 @@ void MODEsetup()
             /* display the changed value and redraw cursor */
             value2string(value[controller_id][array_pos], valstr, type[array_pos]);
             lcd.setCursor(3+(menu_id%3)*5,1); lcd.print(valstr);
-            lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();     
+            lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();
 
             /* check buttonhold and wait appropriate time for next button check */
             if(buttonhold == false)
@@ -449,7 +473,7 @@ void MODEsetup()
                       break;
               /* TYPE */
               case  1: temp_val = temp_val - 1;
-                       if(temp_val == 0) temp_val = 2; /* wrap around */
+                       if(temp_val == 0) temp_val = 3; /* wrap around */
                        break;
               /* CHNL */         
               case  2: temp_val = temp_val - 1;
@@ -489,6 +513,18 @@ void MODEsetup()
                        break;
               /* NOTE RANG */
               case 11: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 1; /* no wrap around */
+                       break;
+			        /* CHORD PROGRESSION */
+              case 12: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 4; /* wrap around */
+                       break;
+              /* CHORD ROOT */
+              case 13: temp_val = temp_val - 1;
+                       if(temp_val == 11) temp_val = 12; /* no wrap around */
+                       break;
+              /* CHORD RANG */
+              case 14: temp_val = temp_val - 1;
                        if(temp_val == 0) temp_val = 1; /* no wrap around */
                        break;
             }
@@ -547,6 +583,8 @@ void MODEplay()
   int noteStateA = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
   int newNoteA = 0;       /* current note for controller A */
   int oldNoteA = 0;       /* previous note for controller A */
+  int newChordA = 0;	  /* current chord for controller A */
+  int oldChordA = 0;	  /* previous chord for controller A */  
 
   int pingTimeOldB = 0;   /* previous ping time for controller B */
   int lowRangeB;          /* low range ping controller B in microseconds */
@@ -559,6 +597,8 @@ void MODEplay()
   int noteStateB = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
   int newNoteB = 0;       /* current note for controller B */
   int oldNoteB = 0;       /* previous note for controller B */
+  int newChordB = 0;	  /* current chord for controller B */
+  int oldChordB = 0;	  /* previous chord for controller B */  
 
   int pingTime;           /* measured ping time between trigger and echo */
   int displayTime = 0;    /* display update timer to avoid value flickering */
@@ -588,9 +628,10 @@ void MODEplay()
       value2string(value[counter][1], valstr, type[1]);
       lcd.setCursor(2,counter); lcd.print(valstr);
 
-      /* display the controller CTRL NUMBER or NOTE SCALE */
+      /* display the controller CTRL NUMBER, NOTE SCALE OR CHORD PROGRESSION */
       if(value[counter][1]==1) value2string(value[counter][6], valstr, type[6]);
-      else value2string(value[counter][9], valstr, type[9]);
+      if(value[counter][1]==2) value2string(value[counter][9], valstr, type[9]);
+      if(value[counter][1]==3) value2string(value[counter][12], valstr, type[12]);
       lcd.setCursor(6,counter); lcd.print(valstr);
 
       /* display the controller CHNL */
@@ -611,9 +652,13 @@ void MODEplay()
   rangePolB = value[1][5];
   
   /* determine lowval and highval depending on TYPE */
-  if(value[0][1]==1){ lowValA=value[0][7]; highValA=value[0][8];} else {lowValA=0; highValA=value[0][11];}
-  if(value[1][1]==1){ lowValB=value[1][7]; highValB=value[1][8];} else {lowValB=0; highValB=value[1][11];}
-
+  if(value[0][1]==1) {lowValA=value[0][7]; highValA=value[0][8];}   /* controller A - CTRL */
+  if(value[0][1]==2) {lowValA=0; highValA=value[0][11];}            /* controller A - NOTE */
+  if(value[0][1]==3) {lowValA=0; highValA=value[0][14];}            /* controller A - CHRD */
+  if(value[1][1]==1) {lowValB=value[1][7]; highValB=value[1][8];}   /* controller B - CTRL */
+  if(value[1][1]==2) {lowValB=0; highValB=value[1][11];}            /* controller B - NOTE */
+  if(value[1][1]==3) {lowValB=0; highValB=value[1][14];}            /* controller B - CTRL */
+  
   do 
   {
       /* if active, process controller A */
@@ -640,7 +685,7 @@ void MODEplay()
             /* set previous value of the pingTime */ 
             pingTimeOldA = pingTime;
             
-            /* send CC message if TYPE is CC */
+            /* send CC message if TYPE is CTRL */
             if(value[0][1]==1)
             {
               /* CC: statusbyte=144+channel, databyte1=controller, databyte2=value */
@@ -654,7 +699,7 @@ void MODEplay()
               }
             }
 
-            /* send Note messages if TYPE is NOT */
+            /* send Note messages if TYPE is NOTE */
             if(value[0][1]==2)
             {
               /* Send noteOff message for the previous note */
@@ -673,6 +718,26 @@ void MODEplay()
               lcd.setCursor(13,0); lcd.print(valstr);
             }
              
+			      /* send Note messages if TYPE is CHORD */
+            if(value[0][1]==3)
+            {
+              /* Send noteOff message for the previous chord */
+              oldNoteA=value[0][13]+progs[value[0][12]-1][oldValA][0];
+			        oldChordA=progs[value[0][12]-1][oldValA][1];
+			        MIDIchord(value[0][2], 0, oldNoteA, oldChordA);
+
+              /* Send noteOn messages for the new chord */
+              newNoteA=value[0][13]+progs[value[0][12]-1][newValA][0];
+			        newChordA=progs[value[0][12]-1][newValA][1];
+			        MIDIchord(value[0][2], 1, newNoteA, oldChordA);
+
+              /* Switch noteState to On: notes are sounding */
+              noteStateA = 1;
+
+              /* display value on the LCD screen */
+              value2string(newNoteA, valstr, 6);
+              lcd.setCursor(13,0); lcd.print(valstr);
+            }  
           }
 
           /* remember the current value for next cycle */
@@ -682,12 +747,28 @@ void MODEplay()
         /* process the results when pingTime is out of range */
         else
         {
-          /* send Note message if TYPE is NOT and notes are sounding */
+          /* send Note Off message if TYPE is NOTE and notes are sounding */
           if( (value[0][1]==2) && (noteStateA==1))
             {
-              /* Send noteOff messages for the previous chord */
+              /* Send noteOff messages for the previous note */
               oldNoteA=value[0][10]+scales[value[0][9]-1][oldValA];
 			        MIDIchord(value[0][2], 0, oldNoteA, 1);
+
+              /* Switch noteState to Off: notes are no longer sounding */
+              noteStateA = 0;
+
+              /* display value on the LCD screen */
+              lcd.setCursor(13, 0);
+              lcd.print("---");
+            }
+			
+		      /* send Note Off message if TYPE is CHORD and notes are sounding */
+          if( (value[0][1]==3) && (noteStateA==1))
+            {
+              /* Send noteOff messages for the previous chord */
+              oldNoteA=value[0][13]+progs[value[0][12]-1][oldValA][0];
+			        oldChordA=progs[value[0][12]-1][oldValA][1];
+			        MIDIchord(value[0][2], 0, oldNoteA, oldChordA);
 
               /* Switch noteState to Off: notes are no longer sounding */
               noteStateA = 0;
@@ -723,7 +804,7 @@ void MODEplay()
             /* set previous value of the pingTime */ 
             pingTimeOldB = pingTime;
             
-            /* send CC message if TYPE is CC */
+            /* send CC message if TYPE is CTRL */
             if(value[1][1]==1)
             {
               /* CC: statusbyte=144+channel, databyte1=controller, databyte2=value */
@@ -737,7 +818,7 @@ void MODEplay()
               }
             }
 
-            /* send Note messages if TYPE is NOT */
+            /* send Note messages if TYPE is NOTE */
             if(value[1][1]==2)
             {
               /* Send noteOff messages for the previous note */
@@ -755,6 +836,27 @@ void MODEplay()
               value2string(newNoteB, valstr, 6);
               lcd.setCursor(13,1); lcd.print(valstr);
             }
+			
+			      /* send Note messages if TYPE is CHORD */
+            if(value[1][1]==3)
+            {
+              /* Send noteOff message for the previous chord */
+              oldNoteB=value[1][13]+progs[value[1][12]-1][oldValB][0];
+			        oldChordB=progs[value[1][12]-1][oldValB][1];
+			        MIDIchord(value[1][2], 0, oldNoteB, oldChordB);
+
+              /* Send noteOn messages for the new chord */
+              newNoteB=value[1][13]+progs[value[1][12]-1][newValB][0];
+			        newChordB=progs[value[1][12]-1][newValB][1];
+			        MIDIchord(value[1][2], 1, newNoteB, oldChordB);
+
+              /* Switch noteState to On: notes are sounding */
+              noteStateB = 1;
+
+              /* display value on the LCD screen */
+              value2string(newNoteB, valstr, 6);
+              lcd.setCursor(13,1); lcd.print(valstr);
+			      }
           }
 
           /* remember the current value for next cycle */
@@ -764,12 +866,28 @@ void MODEplay()
         /* process the results when pingTime is out of range */
         else
         {
-          /* send Note message if TYPE is NOT and notes are sounding */
+          /* send Note Off message if TYPE is NOT and notes are sounding */
           if( (value[1][1]==2) && (noteStateB==1))
             {
               /* Send noteOff messages for the previous chord */
               oldNoteB=value[1][10]+scales[value[1][9]-1][oldValB];
               MIDIchord(value[1][2], 0, oldNoteB, 1);
+
+              /* Switch noteState to Off: notes are no longer sounding */
+              noteStateB = 0;
+
+              /* display value on the LCD screen */
+              lcd.setCursor(13, 1);
+              lcd.print("---");
+            }
+			
+		      /* send Note Off message if TYPE is CHORD and notes are sounding */
+          if( (value[1][1]==3) && (noteStateB==1))
+            {
+              /* Send noteOff messages for the previous chord */
+              oldNoteB=value[1][13]+progs[value[1][12]-1][oldValB][0];
+			        oldChordB=progs[value[1][12]-1][oldValB][1];
+			        MIDIchord(value[1][2], 0, oldNoteB, oldChordB);
 
               /* Switch noteState to Off: notes are no longer sounding */
               noteStateB = 0;
@@ -816,28 +934,105 @@ void MODEplay()
 /* Function:     Converts a value to a formatted string depending on the type.  */
 /* Arguments:    value      : integer value to be converted                     */
 /*               valstr     : pointer to string to store the converted value    */
-/*               type       : conversion type                                   */
+/*               convtype   : conversion type                                   */
 /* ---------------------------------------------------------------------------- */
-void value2string(int value, char *valstr, int type)
+void value2string(int value, char *valstr, int convtype)
 {
-   switch(type)
-   {
-	  case 1:
+  if(convtype == 1)
+  {
+    sprintf(valstr, "%3d", value);
+  }
+  
+  if(convtype == 2)
+  {
+    if(value==0) sprintf(valstr, "OFF");
+    if(value==1) sprintf(valstr, " ON");
+  }
+  
+  if(convtype == 3)
+  {
+    if(value==1) sprintf(valstr, " CC");
+    if(value==2) sprintf(valstr, "NOT");
+    if(value==3) sprintf(valstr, "CHD");
+  }
+  
+  if(convtype == 4)
+  {
+    if(value==0) sprintf(valstr, "NEG");
+    if(value==1) sprintf(valstr, "POS");
+  }
+  
+  if(convtype == 5)
+  {
+    if(value==1) sprintf(valstr, "CHR");
+    if(value==2) sprintf(valstr, "MAJ");
+    if(value==3) sprintf(valstr, "MIN");
+    if(value==4) sprintf(valstr, "MMI");
+    if(value==5) sprintf(valstr, "HMI");
+    if(value==6) sprintf(valstr, "WHL");
+    if(value==7) sprintf(valstr, "MAB");
+    if(value==8) sprintf(valstr, "MIB");
+		if(value==9) sprintf(valstr, "MA5");
+		if(value==10) sprintf(valstr, "MI5");
+		if(value==11) sprintf(valstr, "8WH");
+		if(value==12) sprintf(valstr, "8HW");
+  }
+  
+  if(convtype == 6)
+  {
+    int midiNote = value % 12;
+    int midiOct = (value / 12) - 1;
+    if(midiNote==0) sprintf(valstr, " C%1d", midiOct);
+    if(midiNote==1) sprintf(valstr, "C#%1d", midiOct);
+    if(midiNote==2) sprintf(valstr, " D%1d", midiOct);
+    if(midiNote==3) sprintf(valstr, "D#%1d", midiOct);
+    if(midiNote==4) sprintf(valstr, " E%1d", midiOct);
+    if(midiNote==5) sprintf(valstr, " F%1d", midiOct);
+    if(midiNote==6) sprintf(valstr, "F#%1d", midiOct);
+    if(midiNote==7) sprintf(valstr, " G%1d", midiOct);
+    if(midiNote==8) sprintf(valstr, "G#%1d", midiOct);
+    if(midiNote==9) sprintf(valstr, " A%1d", midiOct);
+    if(midiNote==10) sprintf(valstr, "A#%1d", midiOct);
+    if(midiNote==11) sprintf(valstr, " B%1d", midiOct);
+  }
+  
+  if(convtype == 7)
+  {
+    if(value==1) sprintf(valstr, "MAJ");
+    if(value==2) sprintf(valstr, "MIN");
+    if(value==3) sprintf(valstr, "MAB");
+    if(value==4) sprintf(valstr, "MIB");
+  }
+  
+} /* End of value2string */
+
+
+/*void value2string(int value, char *valstr, int convtype)
+{
+    switch(convtype)
+    {
+	    case 1:
+        lcd.setCursor(0,0); lcd.print("1");
         sprintf(valstr, "%3d", value);
         break;
       case 2:
+        lcd.setCursor(0,0); lcd.print("2");
         if(value==0) sprintf(valstr, "OFF");
         if(value==1) sprintf(valstr, " ON");
         break;
       case 3:
+        lcd.setCursor(0,0); lcd.print("3");
         if(value==1) sprintf(valstr, " CC");
         if(value==2) sprintf(valstr, "NOT");
+        if(value==3) sprintf(valstr, "CHD");
         break;
       case 4:
+        lcd.setCursor(0,0); lcd.print("4");
         if(value==0) sprintf(valstr, "NEG");
         if(value==1) sprintf(valstr, "POS");
         break;
       case 5:
+        lcd.setCursor(0,0); lcd.print("5");
         if(value==1) sprintf(valstr, "CHR");
         if(value==2) sprintf(valstr, "MAJ");
         if(value==3) sprintf(valstr, "MIN");
@@ -852,6 +1047,7 @@ void value2string(int value, char *valstr, int type)
 		    if(value==12) sprintf(valstr, "8HW");
         break;
       case 6:
+        lcd.setCursor(0,0); lcd.print("6");
         int midiNote = value % 12;
         int midiOct = (value / 12) - 1;
         if(midiNote==0) sprintf(valstr, " C%1d", midiOct);
@@ -866,6 +1062,13 @@ void value2string(int value, char *valstr, int type)
         if(midiNote==9) sprintf(valstr, " A%1d", midiOct);
         if(midiNote==10) sprintf(valstr, "A#%1d", midiOct);
         if(midiNote==11) sprintf(valstr, " B%1d", midiOct);
+        break;
+      case 7:
+        lcd.setCursor(0,0); lcd.print("7");
+        if(value==1) sprintf(valstr, "MAJ");
+        if(value==2) sprintf(valstr, "MIN");
+        if(value==3) sprintf(valstr, "MAB");
+        if(value==4) sprintf(valstr, "MIB");
         break;
    }
   
@@ -888,37 +1091,50 @@ void MIDIchord(int channel, int notestate, int basenote, int chordtype)
   /* construct statusbyte : noteOff = 128+channel, noteOn= 144+channel */
   if(notestate == 0) statusbyte = 128+channel-1; else statusbyte = 144+channel-1; 
 
-  /* send basenote to MIDI */
-  if(basenote>=0 && basenote <=127) MIDImessage(statusbyte, basenote, 100);
-
-  /* send additional notes if NOTE =  MAJ, MIN, AUG, DIM, SUS, OCT or 7TH */
-  switch(chordtype)
+  /* send notes to MIDI */
+  if(chordtype == 1) 
+    { 
+	   /* send single note to MIDI */
+	   if(basenote>=0 && basenote <=127) MIDImessage(statusbyte, basenote, 100);
+	  }
+  else
     {
-      case 1: /* single note */
-        break;
-      case 2: /* major chord */ 
-        MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100);
-        break;
-      case 3: /* minor chord */
-        MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100);
-        break;
-      case 4: /* augmented chord */ 
-        MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+8, 100); 
-        break;
-      case 5: /* diminished chord */ 
-        MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+6, 100); 
-        break;
-      case 6: /* suspended chord */ 
-        MIDImessage(statusbyte, basenote+5, 100); MIDImessage(statusbyte, basenote+7, 100); 
-        break;
-      case 7: /* octave */ 
-        MIDImessage(statusbyte, basenote+12, 100); 
-        break;
-      case 8: /* seventh chord */ 
-        MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
-        break;
-    }
- 
+       /* send chord notes to MIDI if in range */
+	   if(basenote>=0 && basenote <=115)
+	   {
+		   /* send basenote to MIDI */
+		   MIDImessage(statusbyte, basenote, 100);
+
+		   /* send additional notes if a CHORD is played */
+		   switch(chordtype)
+			 {
+			    case 1: /* single note */
+				    break;
+			    case 2: /* major chord */ 
+				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100);
+				    break;
+			    case 3: /* minor chord */
+				   MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+7, 100);
+				    break;
+			    case 4: /* augmented chord */ 
+				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+8, 100); 
+				    break;
+			    case 5: /* diminished chord */ 
+				   MIDImessage(statusbyte, basenote+3, 100); MIDImessage(statusbyte, basenote+6, 100); 
+				    break;
+			    case 6: /* suspended chord */ 
+				   MIDImessage(statusbyte, basenote+5, 100); MIDImessage(statusbyte, basenote+7, 100); 
+				    break;
+			    case 7: /* octave */ 
+				   MIDImessage(statusbyte, basenote+12, 100); 
+				    break;
+			    case 8: /* seventh chord */ 
+				   MIDImessage(statusbyte, basenote+4, 100); MIDImessage(statusbyte, basenote+7, 100); MIDImessage(statusbyte, basenote+10, 100); 
+				    break;
+			}
+	   }
+	}
+	
 } /* End of MIDIchord */
 
 
