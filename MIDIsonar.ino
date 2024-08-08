@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 0.9                                                                */
-/* Date:    15-07-2016                                                           */
+/* Version: 1.0                                                                */
+/* Date:    15-10-2023                                                           */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -38,6 +38,13 @@
 /*           range'.                                                            */
 /*                                                                              */
 /* v0.9    : Implemented play mode for sonar controller B.                      */
+/*                                                                              */
+/* v1.0    : Implemented setting values by two new buttons for INC and DEC.     */
+/*           The value potentiometer is removed and no longer functional.       */
+/*                                                                              */
+/* v1.1    : Switched pins for sonar controller A and sonar controller B to     */
+/*           fix the build error in which the controllers are build into the    */
+/*           wrong physical slots.                                              */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
@@ -47,10 +54,11 @@
 /*    D3  - LCD Bit 6 (pin 13)            D12 - LCD Reg Select (pin 4)          */    
 /*    D4  - LCD Bit 5 (pin 12)            D13 - Sonar B Led                     */
 /*    D5  - LCD Bit 4 (pin 11)            A0  - Potmeter Value                  */
-/*    D6  - Sonar A Trigger               A1  - Button MODE SELECT              */
-/*    D7  - Sonar A Echo                  A2  - Button MENU PREV                */
-/*    D8  - Sonar B Trigger               A3  - Button MENU NEXT                */
-/*    D9  - Sonar B Echo                                                        */
+/*    D8  - Sonar A Trigger               A1  - Button MODE SELECT              */
+/*    D9  - Sonar A Echo                  A2  - Button MENU PREV                */
+/*    D6  - Sonar B Trigger               A3  - Button MENU NEXT                */
+/*    D7  - Sonar B Echo                  A4  - Button VALUE INC                */
+/*                                        A5  - Button VALUE DEC                */
 /* ---------------------------------------------------------------------------- */
 
 
@@ -65,10 +73,12 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 const int buttonPin1 = 15;   /* button 1 connected to pin 15 (analog A1) MODE SELECT */
 const int buttonPin2 = 16;   /* button 2 connected to pin 16 (analog A2) MENU PREV   */
 const int buttonPin3 = 17;   /* button 3 connected to pin 17 (analog A3) MENU NEXT   */
+const int buttonPin4 = 18;   /* button 4 connected to pin 18 (analog A4) VALUE INC   */
+const int buttonPin5 = 19;   /* button 5 connected to pin 19 (analog A5) VALUE DEC   */
 
 /* initialize the LEDs */
-const int ledPinA = 10;      /* activity LED used for controller A connected to pin D10 */
-const int ledPinB = 13;      /* activity LED used for controller B connected to pin D13 */
+const int ledPinA = 13;      /* activity LED used for controller A connected to pin D13 */
+const int ledPinB = 10;      /* activity LED used for controller B connected to pin D10 */
 
 /* initialize the potentiometer */
 const int potPin1 = 0;       /* potentiometer 1 connected to pin 1 (analog A0) VALUE */
@@ -76,10 +86,10 @@ const int potPin1 = 0;       /* potentiometer 1 connected to pin 1 (analog A0) V
 int buttonState = 0;
 
 /* initialize the Sonars */
-#define triggerPinA   6      /* trigger pin sonar sensor A connected to pin D6 */
-#define echoPinA      7      /* echo pin sonar sensor A connected to pin D7    */
-#define triggerPinB   8      /* trigger pin sonar sensor B connected to pin D8 */
-#define echoPinB      9      /* echo pin sonar sensor B connected to pin D9    */
+#define triggerPinA   8      /* trigger pin sonar sensor A connected to pin D8 */
+#define echoPinA      9      /* echo pin sonar sensor A connected to pin D9    */
+#define triggerPinB   6      /* trigger pin sonar sensor B connected to pin D6 */
+#define echoPinB      7      /* echo pin sonar sensor B connected to pin D7    */
 
 NewPing sonarA(triggerPinA, echoPinA, 100);   /* NewPing setup of sonar A pins and maximum distance */
 NewPing sonarB(triggerPinB, echoPinB, 100);   /* NewPing setup of sonar A pins and maximum distance */
@@ -121,7 +131,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v0.9");
+  lcd.print("MIDIsonar   v1.1");
 
   delay(1000);
 
@@ -212,6 +222,7 @@ void MODEsetup()
   int prev_val;           /* previous value of the selected menu item as stored in the value array [type specific] */
   int temp_val;           /* temporary value for the selected menu item [type specific] */
   int treshold;           /* indicates whether value knob is turned past treshold (0=FALSE, 1=TRUE) */
+  bool buttonhold;        /* indicates whether value button is hold down */
 
   char* valstr = "   ";   /* temporary string used to construct formatted string values */
 
@@ -304,75 +315,184 @@ void MODEsetup()
         break;
       }
 
-      /* read the current value of the potentiometer */
-      read_potval = analogRead(potPin1);
+      /* check if VALUE INC button is pressed */
+      if(digitalRead(buttonPin4) == HIGH)
+      {
+        /* reset the button hold indicator */
+        buttonhold=false;
 
-      /* check if potentiometer is turned past the treshold of -4 to +4 */
-      if( (abs(read_potval-init_potval) > 4) and (treshold==0) )
-        {
-          treshold = 1;
-        }
-        
-      /* only change value if potentiometer is turned past the treshold */
-      if( (abs(read_potval-prev_potval) > 1) and (treshold==1) )
-        {
-          /* set previous value of the potentiometer */
-          prev_potval = read_potval;
-          
-          /* convert the current value of the potentiometer to a type specific value */
-          switch(array_pos)
-          {
-            case 0: temp_val = read_potval/512; break;
-            case 1: temp_val = read_potval/512+1; break;
-            case 2: temp_val = read_potval/64+1; break;
-            case 3: temp_val = (read_potval/64)*5+5; 
-                    /* value of LDST must be lower then value of HDST */
-                    if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-5; 
-                    break;
-            case 4: temp_val = (read_potval/64)*5+5; 
-                    /* value of HDST must be higher then value of LDST */
-                    if(temp_val<=value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+5; 
-                    break;
-            case 5: temp_val = read_potval/512; break;
-            case 6: temp_val = read_potval/8; break;
-            case 7: temp_val = read_potval/8; 
-                    /* value of LVAL must be lower then value of HVAL */
-                    if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; 
-                    break;
-            case 8: temp_val = read_potval/8; 
-                     /* value of HVAL must be higher then value of LVAL */
-                    if(temp_val<=value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+1; 
-                    break;
-            case 9: temp_val = read_potval/128+1; break;
-            case 10: temp_val = read_potval/8;
-                     /* keep value between specified range */ 
-                     if(temp_val<12) temp_val=12; if(temp_val>119) temp_val=119; 
-                     /* value of LVAL must be lower then value of HVAL */
-                     if(temp_val>=value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; 
-                     break;
-            case 11: temp_val = read_potval/8; 
-                     /* keep value between specified range */ 
-                     if(temp_val<12) temp_val=12; if(temp_val>119) temp_val=119;
-                      /* value of HVAL must be higher then value of LVAL */
-                     if(temp_val<=value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+1;  
-                     break;
-          }
+        /* wait a little to prevent jitter */
+        delay(20);
 
-          /* only change value of the selected menu item if the value has changed */
-          if(temp_val != prev_val)
+        /* check if VALUE INC button is still pressed */
+        while(digitalRead(buttonPin4) == HIGH)
+        {
+            /* get value from the value array */
+            temp_val = value[controller_id][array_pos]; 
+
+            /* increase the value value */
+            switch(array_pos)
             {
-              /* store the changed value in the value array */
-              value[controller_id][array_pos] = temp_val; 
-              prev_val = temp_val;
+              /* ACTV */
+              case  0: temp_val = temp_val + 1;
+                      if(temp_val == 2) temp_val = 0; /* wrap around */
+                      break;
+              /* TYPE */
+              case  1: temp_val = temp_val + 1;
+                       if(temp_val == 3) temp_val = 1; /* wrap around */
+                       break;
+              /* CHNL */         
+              case  2: temp_val = temp_val + 1;
+                       if(temp_val == 17) temp_val = 1; /* wrap around */
+                       break;
+              /* LDST */
+              case  3: temp_val = temp_val + 5;
+                       if(temp_val==value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-5; /* value of LDST must be lower then value of HDST */
+                       break;
+              /* HDST */
+              case  4: temp_val = temp_val + 5;
+                       if(temp_val == 85) temp_val = 80; /* no wrap around */
+                       break;
+              /* POLR */
+              case  5: temp_val = temp_val + 1;
+                       if(temp_val == 2) temp_val = 0; /* wrap around */
+                       break;
+              /* CNTR */
+              case  6: temp_val = temp_val + 1;
+                       if(temp_val == 128) temp_val = 0; /* wrap around */
+                       break;
+              /* CNTR LVAL */
+              case  7: temp_val = temp_val + 1;
+                       if(temp_val==value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; /* value of LVAL must be lower then value of HVAL */
+                       break;
+              /* CNTR HVAL */
+              case  8: temp_val = temp_val + 1; 
+                       if(temp_val == 128) temp_val = 127; /* no wrap around */
+                       break;
+              /* NOTE */
+              case  9: temp_val = temp_val + 1;
+                       if(temp_val == 9) temp_val = 1; /* wrap around */
+                       break;
+              /* NOTE LVAL */
+              case 10: temp_val = temp_val + 1;
+                       if(temp_val==value[controller_id][array_pos+1]) temp_val=value[controller_id][array_pos+1]-1; /* value of LVAL must be lower then value of HVAL */
+                       break;
+              /* NOTE HVAL */
+              case 11: temp_val = temp_val + 1;
+                       if(temp_val == 120) temp_val = 119; /* no wrap around */
+                       break;
+            }
 
-              /* display the changed value and redraw cursor */
-              value2string(value[controller_id][array_pos], valstr, type[array_pos]);
-              lcd.setCursor(3+(menu_id%3)*5,1); lcd.print(valstr);
-              lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();              
-            }       
+            /* store the changed value in the value array */
+            value[controller_id][array_pos] = temp_val; 
 
+            /* display the changed value and redraw cursor */
+            value2string(value[controller_id][array_pos], valstr, type[array_pos]);
+            lcd.setCursor(3+(menu_id%3)*5,1); lcd.print(valstr);
+            lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();     
+
+            /* check buttonhold and wait appropriate time for next button check */
+            if(buttonhold == false)
+            {
+              delay(300);
+              buttonhold=true;
+            }
+            else
+            {
+              delay(70);
+            }
         }
-     
+      }   
+
+      /* check if VALUE DEC button is pressed */
+      if(digitalRead(buttonPin5) == HIGH)
+      {
+        /* reset the button hold indicator */
+        buttonhold=false;
+
+        /* wait a little to prevent jitter */
+        delay(20);
+
+        /* check if VALUE DEC button is still pressed */
+        while(digitalRead(buttonPin5) == HIGH)
+        {
+            /* get value from the value array */
+            temp_val = value[controller_id][array_pos]; 
+
+            /* increase the value value */
+            switch(array_pos)
+            {
+              /* ACTV */
+              case  0: temp_val = temp_val - 1;
+                      if(temp_val == -1) temp_val = 1; /* wrap around */
+                      break;
+              /* TYPE */
+              case  1: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 2; /* wrap around */
+                       break;
+              /* CHNL */         
+              case  2: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 16; /* wrap around */
+                       break;
+              /* LDST */
+              case  3: temp_val = temp_val - 5;
+                       if(temp_val == 0) temp_val = 5; /* no wrap around */
+                       break;
+              /* HDST */
+              case  4: temp_val = temp_val - 5;
+                       if(temp_val==value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+5; /* value of HDST must be higher then value of LDST */
+                       break;
+              /* POLR */
+              case  5: temp_val = temp_val - 1;
+                       if(temp_val == -1) temp_val = 1; /* wrap around */
+                       break;
+              /* CNTR */
+              case  6: temp_val = temp_val - 1;
+                       if(temp_val == -1) temp_val = 127; /* wrap around */
+                       break;
+              /* CNTR LVAL */
+              case  7: temp_val = temp_val - 1;
+                       if(temp_val == -1) temp_val = 0; /* no wrap around */
+                       break;
+              /* CNTR HVAL */
+              case  8: temp_val = temp_val - 1; 
+                       if(temp_val==value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+1; /* value of HVAL must be higher then value of LVAL */
+                       break;
+              /* NOTE */
+              case  9: temp_val = temp_val - 1;
+                       if(temp_val == 0) temp_val = 8; /* wrap around */
+                       break;
+              /* NOTE LVAL */
+              case 10: temp_val = temp_val - 1;
+                       if(temp_val == 11) temp_val = 12; /* no wrap around */
+                       break;
+              /* NOTE HVAL */
+              case 11: temp_val = temp_val - 1;
+                       if(temp_val==value[controller_id][array_pos-1]) temp_val=value[controller_id][array_pos-1]+1; /* value of LVAL must be lower then value of HVAL */
+                       break;
+            }
+
+            /* store the changed value in the value array */
+            value[controller_id][array_pos] = temp_val; 
+
+            /* display the changed value and redraw cursor */
+            value2string(value[controller_id][array_pos], valstr, type[array_pos]);
+            lcd.setCursor(3+(menu_id%3)*5,1); lcd.print(valstr);
+            lcd.setCursor(5+(menu_id%3)*5,1); lcd.cursor();     
+
+            /* check buttonhold and wait appropriate time for next button check */
+            if(buttonhold == false)
+            {
+              delay(300);
+              buttonhold=true;
+            }
+            else
+            {
+              delay(70);
+            }
+        }
+      }   
+
     } while (true);
           
   } while (true);
@@ -416,7 +536,8 @@ void MODEplay()
   int noteStateB = 0;     /* State of the notes when type=NOT: 0=off, 1=on */
 
   int pingTime;           /* measured ping time between trigger and echo */
-  
+  int displayTime = 0;    /* display update timer to avoid value flickering */
+
   char* valstr = "   ";       /* temporary string used to construct formatted string values */
 
   /* display the static part of the mode play screen and switch on LED's */
@@ -501,8 +622,11 @@ void MODEplay()
               MIDImessage(176+value[0][2]-1, value[0][6], newValA);
 
               /* display value on the LCD screen */
-              value2string(newValA, valstr, 1);
-              lcd.setCursor(13,0); lcd.print(valstr);
+              if(displayTime==0)
+              {
+                 value2string(newValA, valstr, 1);
+                 lcd.setCursor(13,0); lcd.print(valstr);
+              }
             }
 
             /* send Note messages if TYPE is NOT */
@@ -541,7 +665,8 @@ void MODEplay()
               noteStateA = 0;
 
               /* display value on the LCD screen */
-              lcd.setCursor(13, 0); lcd.print("---");
+              lcd.setCursor(13, 0);
+              lcd.print("---");
             }
         }
         
@@ -578,8 +703,11 @@ void MODEplay()
               MIDImessage(176+value[1][2]-1, value[1][6], newValB);
 
               /* display value on the LCD screen */
-              value2string(newValB, valstr, 1);
-              lcd.setCursor(13,1); lcd.print(valstr);
+              if(displayTime==0)
+              {
+                value2string(newValB, valstr, 1);
+                lcd.setCursor(13,1); lcd.print(valstr);
+              }
             }
 
             /* send Note messages if TYPE is NOT */
@@ -618,10 +746,11 @@ void MODEplay()
               noteStateB = 0;
 
               /* display value on the LCD screen */
-              lcd.setCursor(13, 1); lcd.print("---");
+              if(displayTime==0)
+              lcd.setCursor(13, 1);
+              lcd.print("---");
             }
         }
-        
       }
 
       /* check if MODE SELECT button is pressed */
@@ -640,6 +769,13 @@ void MODEplay()
         if(value[1][1]==2) MIDIchord(value[1][2], 0, oldValB, value[1][9]);
 
         return;
+      }
+
+      /* increase displayTime */
+      displayTime++;
+      if(displayTime==2)
+      {
+        displayTime=0;
       }
 
   } while (true);
