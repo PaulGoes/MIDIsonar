@@ -53,7 +53,7 @@ For both controllers the following settings are available:
 - **Active status:**
     - Set the controller active or not so you can use both or either one of the controllers.
 - **Operational range:**
-    - Set the range (minimum and maximum) in cm's in which the controller is operational (from 5 cm to 80 cm).
+    - Set the range (minimum and maximum) in cm's in which the controller is operational (from 5cm to 80cm).
 - **Polarity:**
     - Set the polarity of the controller, e.g. CC values increase or decrease when your hand is raised.
 - **MIDI Channel:**
@@ -140,3 +140,11 @@ After a few seconds the MIDI Sonar switches to the Standby Mode.
 By pressing the MODE button you can cycle trought the three modes Standby, Setup and Play.
 
 ![MIDIsonar Mode Select](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Mode%20Select.png)
+
+The MIDIsonar has a default setup and you can immediately use it by going to the Play mode. The default setup is:
+
+MIDI controller A: 
+- Active with a range from 5cm to 50cm, sending MIDI CC 7 (Volume) over the full range of 0 to 127.
+  
+MIDI controller B: 
+- Active with a range from 5cm to 50cm, sending MIDI NOTES of a chromatic scale with root note C3 spanning 24 steps.
