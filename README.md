@@ -153,7 +153,7 @@ MIDI controller A:
   
 MIDI controller B: 
 - Active with a range from 5cm to 50cm, positive polarity, MIDI channel 2.
-- Sending MIDI NOTES using a chromatic scale with root note C3 spanning 24.
+- Sending MIDI NOTES using a chromatic scale with root note C3 divided in 24 steps.
 
 When in Play mode the activity LED's for controller A and controller B indicate whether the controller is active (lit) or not (dimmed).
 
