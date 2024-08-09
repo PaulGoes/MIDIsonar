@@ -6,14 +6,16 @@ The MidiSonar is a MIDI Gesture Controller based on an Arduino UNO with two HC-S
 
 With MIDIsonar you have ***two independent sonar based gesture controllers*** that let you create music by waving your hands up and down above the controllers.
 
-Each gesture controller uses a sonar sensor that measures the distance between itself and the hand above it using sonar waves (much like bats do to orientate themselves). By varying the distance between your hands and the sonar sensors you ***generate musical information*** that can be send over the MIDI Out to any MIDI capable device like your synthesizer, drum machine or DAW.
+Each gesture controller uses a sonar sensor that measures the distance between itself and the hand above it using sonar waves (much like bats do to orientate themselves). 
+
+By varying the distance between your hands and the sonar sensors you ***generate musical information*** that can be send over the MIDI Out to any MIDI capable device like your synthesizer, drum machine or DAW.
 
 MIDISonar lets you generate the following MIDI information:
 
-- **MIDI Control Changes - Change the sound characteristics**
+- **MIDI Control Changes - Change the sound characteristics:**
     - Selectable MIDI CC number
     - Selectable value range (min and max)
-- **MIDI Notes - Play melodies and scales**
+- **MIDI Notes - Play melodies and scales:**
     - Selectable root note
     - Selectable scale
       - Chromatic
@@ -28,7 +30,7 @@ MIDISonar lets you generate the following MIDI information:
       - Minor Pentatonic
       - Octatonic Whole Half
       - Octatonic Half Whole
-- **MIDI Chords - Play harmonies and progressions**
+- **MIDI Chords - Play harmonies and progressions:**
     - Selectable root note
     - Selectable chord progression
       - Major
@@ -40,6 +42,6 @@ MIDISonar lets you generate the following MIDI information:
       - Modal
       - Gospel
       - Pachelbel  
-- **MIDI Pitchbend - Change the tone height of the sound**
+- **MIDI Pitchbend - Change the tone height of the sound:**
     - Selectable direction (up, down, up&down)
     - Selectable value range (min and max) and neutral zone 
