@@ -1,14 +1,14 @@
 # MIDIsonar
 ## An Arduino based MIDI Gesture Controller 
-The MidiSonar is a MIDI Gesture Controller based on an Arduino UNO with two HC-SR04 sonar sensors.
+The MidiSonar is a MIDI Gesture Controller based on an Arduino UNO with two HC-SR04 ultrasonic sensors.
 
 ![MIDIsonar Welcome](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Usage.png)
 
 With MIDIsonar you have ***two independent sonar based gesture controllers*** that let you create music by waving your hands up and down above the controllers.
 
-Each gesture controller uses a sonar sensor that measures the distance between itself and the hand above it using sonar waves (much like bats do to orientate themselves). 
+Each gesture controller uses a ultrasonic sensor that measures the distance between itself and the hand above it using sonar waves (much like bats do to orientate themselves). 
 
-By varying the distance between your hands and the sonar sensors you ***generate musical information*** that can be send over the MIDI Out to any MIDI capable device like your synthesizer, drum machine or DAW.
+By varying the distance between your hands and the ultrasonic sensors you ***generate musical information*** that can be send over the MIDI Out to any MIDI capable device like your synthesizer, drum machine or DAW.
 
 ### MIDI information generated
 
@@ -69,3 +69,37 @@ If set to the same MIDI channel the MIDIsonar can e.g. be used to:
 - Control the filter of a sound with the left hand and control the resonance of the same sound with the right hand.
 - Control the volume of a sound with the left hand and control the pitch of the same sound to play the sound like a theremin.
 - Trigger a single bass drum note with the left hand and trigger another single snare drum note with the right hand to play air drums.
+
+## Build it Yourself
+
+You can build the MIDIsonar yourself. Just build it up like shown below and load the MIDIsonar.ino into the Arduino UNO. 
+
+### Schematic
+
+Connect the various components as shown in this schematic diagram.
+
+![MIDIsonar Schematic](https://github.com/PaulGoes/MIDIsonar/blob/master/MIDIsonar%20Schematic.jpg)
+
+### Bill Of Materials
+
+To build the MIDIsonar you need the following components.
+
+| Component  | Quantity |
+| ------------- | ------------- |
+| Arduino UNO Microcontroller | 1x  |
+| HC-RC04 ULtrasonic sensor  | 2x  |
+| HD44780 16x2 LCD screen | 1x |
+| MIDI Din Connector | 1x |
+| Push buttons | 5x |
+| LED diode | 2x |
+| Potentiometer 10kOhm | 1x |
+| Resistor 220Ohm | 5x |
+| Resistor 10kOhm | 5x |
+| Breadboard & Wires | 1x |
+
+If you want to build a more permanent solution you might want to solder the components and you additionally need protyping PCB boards and soldering equipment.
+If you want to build it into a case you might additionally need wood, paint and screws (wooden case) or 3D printing equipment (3D printed plastic case).
+
+### GPIO Pin definitions
+
+
