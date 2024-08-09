@@ -1,8 +1,8 @@
 /* MIDIsonar                                                                    */
 /* ---------------------------------------------------------------------------- */
 /* Author:  Paul Goes                                                           */
-/* Version: 3.0                                                                 */
-/* Date:    18-03-2024                                                          */
+/* Version: 3.1                                                                 */
+/* Date:    19-03-2024                                                          */
 /* ---------------------------------------------------------------------------- */ 
 /* Revision history:                                                            */
 /*                                                                              */
@@ -74,10 +74,17 @@
 /*                                                                              */
 /* v3.0    : Added MIDI reset when leaving play mode. Notes that are sounding   */
 /*           are released and the pitch bend is reset to neutral position.      */
+/*                                                                              */
+/* v3.1    : Enhanced playing of note scales and chord progressions. In         */
+/*           previous versions it played one note/chord outside of the range.   */
+/*           With a range of 1 it played 2 notes/chords, with the range set     */
+/*           to maximum it tried to play a note outside of the arrays.          */
+/*           With range of a single note it is now possible to trigger single   */
+/*           notes/chords with more precision.                                  */
 /* ---------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------- */
-/* Arduino UNO Pin connections:                                                 */
+/* Arduino Pin connections:                                                     */
 /*    TXD - MIDI OUT Serial               D10 - Sonar B Led                     */
 /*    D2  - LCD Bit 7 (pin 14)            D11 - LCD Clock (pin 6)               */
 /*    D3  - LCD Bit 6 (pin 13)            D12 - LCD Reg Select (pin 4)          */    
@@ -198,7 +205,7 @@ void setup()
 
   /* display productname and version */
   lcd.setCursor(0, 0);
-  lcd.print("MIDIsonar   v3.0");
+  lcd.print("MIDIsonar   v3.1");
 
   delay(1000);
 
@@ -638,7 +645,7 @@ void MODEplay()
   int lowValA;            /* low value for controller A*/
   int highValA;           /* high value for controller A*/
   int newValA = 0;        /* current value measured for controller A */
-  int oldValA = 0;        /* previous value measured for controller A */
+  int oldValA = 999;      /* previous value measured for controller A */
   int noteStateA = 0;     /* state of the notes when type=NOTE: 0=off, 1=on */
   int newNoteA = 0;       /* current note for controller A */
   int oldNoteA = 0;       /* previous note for controller A */
@@ -657,7 +664,7 @@ void MODEplay()
   int lowValB;            /* low value for controller B*/
   int highValB;           /* high value for controller B*/
   int newValB = 0;        /* current value measured for controller B */
-  int oldValB = 0;        /* previous value measured for controller B */
+  int oldValB = 999;      /* previous value measured for controller B */
   int noteStateB = 0;     /* State of the notes when type=NOTE: 0=off, 1=on */
   int newNoteB = 0;       /* current note for controller B */
   int oldNoteB = 0;       /* previous note for controller B */
@@ -763,6 +770,9 @@ void MODEplay()
           /* keep value within range in case of rounding errors */
           if (newValA<lowValA) newValA=lowValA; if (newValA>highValA) newValA=highValA;
 
+          /* adjust value to array index */
+          if((value[0][1]==2) || (value[0][1]==3)) if(newValA==highValA) newValA--;
+          
           /* send MIDI controller message if value has changed */
           if ( (newValA!=oldValA) && (abs(pingTime-pingTimeOldA) > wiggleroom[value[0][1]-1] ) )
           {
@@ -787,9 +797,12 @@ void MODEplay()
             if(value[0][1]==2)
             {
               /* Send noteOff message for the previous note */
-              oldNoteA=value[0][10]+scales[value[0][9]-1][oldValA];
-			        MIDIchord(value[0][2], 0, oldNoteA, 1);
-
+              if(oldValA != 999)
+              {
+                oldNoteA=value[0][10]+scales[value[0][9]-1][oldValA];
+			          MIDIchord(value[0][2], 0, oldNoteA, 1);
+              }
+ 
               /* Send noteOn messages for the new chord */
               newNoteA=value[0][10]+scales[value[0][9]-1][newValA];
 			        MIDIchord(value[0][2], 1, newNoteA, 1);
@@ -805,11 +818,14 @@ void MODEplay()
 			      /* send Note messages if TYPE is CHORD */
             if(value[0][1]==3)
             {
-              /* Send noteOff message for the previous chord */
-              oldNoteA=value[0][13]+progs[value[0][12]-1][oldValA][0];
-			        oldChordA=progs[value[0][12]-1][oldValA][1];
-			        MIDIchord(value[0][2], 0, oldNoteA, oldChordA);
-
+              if(oldValA != 999)
+              {
+                /* Send noteOff message for the previous chord */
+                oldNoteA=value[0][13]+progs[value[0][12]-1][oldValA][0];
+			          oldChordA=progs[value[0][12]-1][oldValA][1];
+			          MIDIchord(value[0][2], 0, oldNoteA, oldChordA);
+              }
+              
               /* Send noteOn messages for the new chord */
               newNoteA=value[0][13]+progs[value[0][12]-1][newValA][0];
 			        newChordA=progs[value[0][12]-1][newValA][1];
@@ -888,8 +904,8 @@ void MODEplay()
               oldNoteA=value[0][10]+scales[value[0][9]-1][oldValA];
 			        MIDIchord(value[0][2], 0, oldNoteA, 1);
 
-              /* Switch noteState to Off: notes are no longer sounding */
-              noteStateA = 0;
+              /* Switch noteState to Off and reset old values: notes are no longer sounding */
+              noteStateA = 0; oldValA = 999; pingTimeOldA = pingTime;
 
               /* display value on the LCD screen */
               lcd.setCursor(13, 0);
@@ -904,8 +920,8 @@ void MODEplay()
 			        oldChordA=progs[value[0][12]-1][oldValA][1];
 			        MIDIchord(value[0][2], 0, oldNoteA, oldChordA);
 
-              /* Switch noteState to Off: notes are no longer sounding */
-              noteStateA = 0;
+              /* Switch noteState to Off and reset old values: notes are no longer sounding */
+              noteStateA = 0; oldValA = 999; pingTimeOldA = pingTime;
 
               /* display value on the LCD screen */
               lcd.setCursor(13, 0);
@@ -939,6 +955,9 @@ void MODEplay()
           /* keep value within range in case of rounding errors */
           if (newValB<lowValB) newValB=lowValB; if (newValB>highValB) newValB=highValB;
 
+          /* adjust value to array index */
+          if((value[1][1]==2) || (value[1][1]==3)) if(newValB==highValB) newValB--;
+
           /* send MIDI controller message if value has changed */
           if ( (newValB!=oldValB) && (abs(pingTime-pingTimeOldB) > wiggleroom[value[1][1]-1] ) )
           {
@@ -962,9 +981,12 @@ void MODEplay()
             /* send Note messages if TYPE is NOTE */
             if(value[1][1]==2)
             {
-              /* Send noteOff messages for the previous note */
-              oldNoteB=value[1][10]+scales[value[1][9]-1][oldValB];
-              MIDIchord(value[1][2], 0, oldNoteB, 1);
+              if(oldValB != 999)
+              {
+                /* Send noteOff messages for the previous note */
+                oldNoteB=value[1][10]+scales[value[1][9]-1][oldValB];
+                MIDIchord(value[1][2], 0, oldNoteB, 1);
+              }
 
               /* Send noteOn messages for the new note */
               newNoteB=value[1][10]+scales[value[1][9]-1][newValB];
@@ -982,9 +1004,12 @@ void MODEplay()
             if(value[1][1]==3)
             {
               /* Send noteOff message for the previous chord */
-              oldNoteB=value[1][13]+progs[value[1][12]-1][oldValB][0];
-			        oldChordB=progs[value[1][12]-1][oldValB][1];
-			        MIDIchord(value[1][2], 0, oldNoteB, oldChordB);
+              if(oldValB != 999)
+              {
+                oldNoteB=value[1][13]+progs[value[1][12]-1][oldValB][0];
+			          oldChordB=progs[value[1][12]-1][oldValB][1];
+			          MIDIchord(value[1][2], 0, oldNoteB, oldChordB);
+              }
 
               /* Send noteOn messages for the new chord */
               newNoteB=value[1][13]+progs[value[1][12]-1][newValB][0];
@@ -1064,8 +1089,8 @@ void MODEplay()
               oldNoteB=value[1][10]+scales[value[1][9]-1][oldValB];
               MIDIchord(value[1][2], 0, oldNoteB, 1);
 
-              /* Switch noteState to Off: notes are no longer sounding */
-              noteStateB = 0;
+              /* Switch noteState to Off and reset old values: notes are no longer sounding */
+              noteStateB = 0; oldValB = 999; pingTimeOldB = pingTime;
 
               /* display value on the LCD screen */
               lcd.setCursor(13, 1);
@@ -1080,8 +1105,8 @@ void MODEplay()
 			        oldChordB=progs[value[1][12]-1][oldValB][1];
 			        MIDIchord(value[1][2], 0, oldNoteB, oldChordB);
 
-              /* Switch noteState to Off: notes are no longer sounding */
-              noteStateB = 0;
+              /* Switch noteState to Off and reset old values: notes are no longer sounding */
+              noteStateB = 0; oldValB = 999; pingTimeOldB = pingTime;
 
               /* display value on the LCD screen */
               lcd.setCursor(13, 1);
