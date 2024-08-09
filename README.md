@@ -50,13 +50,13 @@ MIDISonar lets you generate the following MIDI information:
 ### Controller Configuration
 
 For both controllers the following settings are available:
-- **Active status**
+- **Active status:**
     - Set the controller active or not so you can use both or either one of the controllers.
-- **Operational range**
+- **Operational range:**
     - Set the range (minimum and maximum) in cm's in which the controller is operational (from 5 cm to 80 cm).
-- **Polarity**
-    - Set the polarity of the controller, e.g. CC values increase when hand goes up or decrease when hand goes up.
-- **MIDI Channel**
+- **Polarity:**
+    - Set the polarity of the controller, e.g. CC values increase or decrease when your hand is raised.
+- **MIDI Channel:**
     - Set the MIDI channel of the controller so you can use both on the same or on different MIDI channels.
 
 ### Musical usage examples
