@@ -137,9 +137,13 @@ After a few seconds the MIDI Sonar switches to the Standby Mode.
 
 ![MIDIsonar Standby](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Standby.png)
 
+### Select Modes
+
 By pressing the MODE button you can cycle trought the three modes Standby, Setup and Play.
 
 ![MIDIsonar Mode Select](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Mode%20Select.png)
+
+### Play Mode
 
 The MIDIsonar has a default setup and you can immediately use it by going to the Play mode. The default setup is:
 
@@ -148,3 +152,9 @@ MIDI controller A:
   
 MIDI controller B: 
 - Active with a range from 5cm to 50cm, sending MIDI NOTES of a chromatic scale with root note C3 spanning 24 steps.
+
+When in Play mode the activity LED's for controller A and controller B indicate whether the controller is active (lit) or not (dimmed).
+
+When in Play mode the LCD screen gives visual feedback on the controls. For the default setup it shows the following information.
+
+
