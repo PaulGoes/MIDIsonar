@@ -157,4 +157,5 @@ When in Play mode the activity LED's for controller A and controller B indicate 
 
 When in Play mode the LCD screen gives visual feedback on the controls. For the default setup it shows the following information.
 
+![MIDIsonar Play Default](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Play%20Default.png)
 
