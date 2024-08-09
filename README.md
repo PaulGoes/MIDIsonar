@@ -119,3 +119,11 @@ The MIDIsonar defines the GPIO pins of the Arduino UNO as follows.
 
 In the software the pins are defined at the beginning of the code. If you use another type of Arduino than an Arduino UNO, you might have to change the pin numbers to the corresponding ones for the type that you use.
 
+### Software
+
+The software uses the following libraries:
+- LiquidCrystal.h - to interface with the LCD screen
+- NewPing.h - to interface with the ultrasonic sensors
+
+The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
+
