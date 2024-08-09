@@ -127,3 +127,8 @@ The software uses the following libraries:
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
 
+## User Manual
+
+When you power on the MIDI Sonar it starts up with the welcome screen that displays the software version.
+
+![MIDIsonar Welcome](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Welcome%20Screen.png)
