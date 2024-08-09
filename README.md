@@ -45,3 +45,14 @@ MIDISonar lets you generate the following MIDI information:
 - **MIDI Pitchbend - Change the tone height of the sound:**
     - Selectable direction (up, down, up&down)
     - Selectable value range (min and max) and neutral zone 
+
+For both controllers the operating range can be set to operate on their own MIDI channel. 
+
+If set to two different MIDI channels this can e.g. be used to:
+- Play chord progressions with the left hand controlling a pad sound and play note melodies with the right hand controlling a lead sound.
+- Control the filter of a running sequence sound with the left hand and play note melodies with the right hand controlling a lead sound.
+
+If set to the same MIDI channel this can e.g. be used to:
+- Control the filter of a sound with the left hand and control the resonance of the same sound with the right hand.
+- Control the volume of a sound with the left hand and control the pitch of the same sound to play the sound like a theremin.
+- Trigger a single bass drum note with the left hand and trigger another single snare drum note with the right hand to play air drums.
