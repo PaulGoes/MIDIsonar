@@ -132,3 +132,11 @@ The sketch uses 15010 bytes (46%) of program storage space. Global variables use
 When you power on the MIDI Sonar it starts up with the welcome screen that displays the software version.
 
 ![MIDIsonar Welcome](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Welcome%20Screen.png)
+
+After a few seconds the MIDI Sonar switches to the Standby Mode.
+
+![MIDIsonar Standby](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Standby.png)
+
+By pressing the MODE button you can cycle trought the three modes Standby, Setup and Play.
+
+![MIDIsonar Mode Select](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Mode%20Select.png)
