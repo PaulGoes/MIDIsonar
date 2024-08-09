@@ -98,8 +98,24 @@ To build the MIDIsonar you need the following components.
 | Breadboard & Wires | 1x |
 
 If you want to build a more permanent solution you might want to solder the components and you additionally need protyping PCB boards and soldering equipment.
+
 If you want to build it into a case you might additionally need wood, paint and screws (wooden case) or 3D printing equipment (3D printed plastic case).
 
 ### GPIO Pin definitions
 
+The MIDIsonar defines the GPIO pins of the Arduino UNO as follows.
+
+| GPIO | Usage | GPIO | Usage |
+| ------------- | ------------- | ------------- | ------------- |
+| TXD | Serial MIDI Out | D10 | Activity LED B |
+| D2 | LCD Data bit 7 |  D11 | LCD Clock |
+| D3 | LCD Data bit 6 | D12 | LCD Register Select |
+| D4 | LCD Data bit 5 | D13 | Activity LED A |
+| D5 | LCD Data bit 4 | A1 | Button MODE |
+| D6 | Sensor B Trigger | A2 | Button PREV |
+| D7 | Sensor B Echo | A3 | Button NEXT |
+| D8 | Sensor A Trigger | A4 | Button INC |
+| D9 | Sensor A Echo | A5 | Button DEC |
+
+In the software the pins are defined at the beginning of the code. If you use another type of Arduino than an Arduino UNO, you might have to change the pin numbers to the corresponding ones for the type that you use.
 
