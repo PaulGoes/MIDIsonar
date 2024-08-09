@@ -148,10 +148,12 @@ By pressing the MODE button you can cycle trought the three modes Standby, Setup
 The MIDIsonar has a default setup and you can immediately use it by going to the Play mode. The default setup is:
 
 MIDI controller A: 
-- Active with a range from 5cm to 50cm, sending MIDI CC 7 (Volume) over the full range of 0 to 127 on MIDI channel 2.
+- Active with a range from 5cm to 50cm, positive polarity, MIDI channel 2.
+- Sending MIDI CC 7 (Volume) over the full range of 0 to 127.
   
 MIDI controller B: 
-- Active with a range from 5cm to 50cm, sending MIDI NOTES of a chromatic scale with root note C3 spanning 24 steps on MIDI channel 2.
+- Active with a range from 5cm to 50cm, positive polarity, MIDI channel 2.
+- Sending MIDI NOTES using a chromatic scale with root note C3 spanning 24.
 
 When in Play mode the activity LED's for controller A and controller B indicate whether the controller is active (lit) or not (dimmed).
 
