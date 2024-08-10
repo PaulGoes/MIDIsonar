@@ -177,8 +177,8 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 Settings of the first Setup screen:
 
 - ACTV: Active
-  - ON = active
-  - OFF = inactive
+  - ON = Active
+  - OFF = Inactive
 - TYPE:
   - CC = Send MIDI CC changes
   - NOT = Send MIDI Notes
@@ -186,4 +186,28 @@ Settings of the first Setup screen:
   - PB = Send MIDI Pitchbend
 - CHNL:
   - 1-16 = MIDI Channel 
+
+![MIDIsonar Setup 2](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%202.png)
+
+Settings of the second Setup screen:
+
+- LDST: Low Distance
+  - 5-80 = Low end of the operating range in cm (in steps of 5)
+- HDST: High Distance
+  - 5-80 = High end of the operating range in cm (in steps of 5)
+- POLR: Polarity
+  - POS = Positive mapping
+  - NEG = Negative mapping   
+
+The following image illustrates the effect of using positive and negative polarity.
+
+The third Setup screen contains settings that are dependent of the chosen TYPE of operation.
+
+![MIDIsonar Setup 3 CC]()
+
+![MIDIsonar Setup 3 NOT]()
+
+![MIDIsonar Setup 3 CHR]()
+
+![MIDIsonar Setup 3 CC]()
 
