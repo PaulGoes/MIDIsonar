@@ -171,4 +171,30 @@ When in Play mode the LCD screen gives visual feedback on the controls. For the 
 
 You can read from this screen that controller A is now sending CC 7 with a value 32 and controlle B is now sending note G#3 both on MIDI channel 2.
 
+### Setup Mode
+
+In Setup mode you can configure the settings for both controllers.
+
+When you go into Setup Mode for the first time you are presented the first setup screen for controller A.
+
+![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201.png)
+
+The cursor (a thin line at the bottom) indicates which setting is currently selected. 
+
+You can change the value of the selected setting by pressing the DEC (decrease) and INC (increase) buttons. If you keep either button pressed it will scroll faster through the values.
+
+Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. You can select different settings by pressing the PREV (previous) and NEXT (next) buttons. By pressing the PREV and NEXT buttons you cycle through the settings of controller A and controller B. When you press the NEXT button at the last setting of controller B you will go to the first setting of controller A. When you press the PREV button at the first setting of controller A you will go to the last setting of controller B.
+
+Settings of the first Setup screen:
+
+- ACTV: Active
+  - ON = active
+  - OFF = inactive
+- TYPE:
+  - CC = Send MIDI CC changes
+  - NOT = Send MIDI Notes
+  - CHD = Send MIDI Chords
+  - PB = Send MIDI Pitchbend
+- CHNL:
+  - 1-16 = MIDI Channel 
 
