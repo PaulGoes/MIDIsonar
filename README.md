@@ -18,31 +18,10 @@ MIDISonar lets you generate the following MIDI information:
     - Selectable value range (min and max).
 - **MIDI Notes - Play melodies and scales:**
     - Selectable root note.
-    - Selectable scale:
-      - Chromatic.
-      - Major.
-      - Minor.
-      - Melodic Minor.
-      - Harmonic Minor.
-      - Whole Tone.
-      - Major Blues.
-      - Minor Blues.
-      - Major Pentatonic.
-      - Minor Pentatonic.
-      - Octatonic Whole Half.
-      - Octatonic Half Whole.
+    - Selectable scale (12 different available)
 - **MIDI Chords - Play harmonies and progressions:**
     - Selectable root note.
-    - Selectable chord progression:
-      - Major.
-      - Minor.
-      - Major Blues 7th.
-      - Minor Blues 7th.
-      - Pop.
-      - Jazz.
-      - Modal.
-      - Gospel.
-      - Pachelbel.  
+    - Selectable chord progression (9 different available)
 - **MIDI Pitchbend - Change the tone height of the sound:**
     - Selectable direction (up, down, up&down).
     - Selectable value range (min and max) and neutral zone .
@@ -169,7 +148,7 @@ When in Play mode the LCD screen gives visual feedback on the controls. For the 
 
 ![MIDIsonar Play Default](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Play%20Default.png)
 
-You can read from this screen that controller A is now sending CC 7 with a value 32 and controlle B is now sending note G#3 both on MIDI channel 2.
+You can read from this screen that controller A is now sending CC 7 with a value 32 and controller B is now sending note G#3 both on MIDI channel 2.
 
 ### Setup Mode
 
