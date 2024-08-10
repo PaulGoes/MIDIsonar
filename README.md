@@ -174,7 +174,7 @@ You can change the value of the selected setting by pressing the DEC (decrease) 
 
 Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. 
 
-Settings of the first Setup screen:
+**Settings of the first Setup screen:**
 
 - ACTV: Active
   - ON = Active
@@ -189,7 +189,7 @@ Settings of the first Setup screen:
 
 ![MIDIsonar Setup 2](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%202.png)
 
-Settings of the second Setup screen:
+**Settings of the second Setup screen:**
 
 - LDST: Low Distance
   - 5-80 = Low end of the operating range in cm (in steps of 5)
@@ -203,11 +203,18 @@ The following image illustrates the effect of using positive and negative polari
 
 The third Setup screen contains settings that are dependent of the chosen TYPE of operation.
 
-![MIDIsonar Setup 3 CC]()
+![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
 
-![MIDIsonar Setup 3 NOT]()
+**Settings of the third Setup screen - MIDI CC Changes:**
 
-![MIDIsonar Setup 3 CHR]()
+![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
 
-![MIDIsonar Setup 3 CC]()
+**Settings of the third Setup screen - MIDI Notes:**
 
+![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
+
+**Settings of the third Setup screen - MIDI Chords:**
+
+![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
+
+**Settings of the third Setup screen - MIDI Pitchbend:**
