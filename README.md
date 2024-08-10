@@ -176,6 +176,8 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 
 **Settings of the first Setup screen:**
 
+![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201.png)
+
 - ACTV: Active
   - ON = Active
   - OFF = Inactive
@@ -187,9 +189,9 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 - CHNL:
   - 1-16 = MIDI Channel 
 
-![MIDIsonar Setup 2](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%202.png)
-
 **Settings of the second Setup screen:**
+
+![MIDIsonar Setup 2](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%202.png)
 
 - LDST: Low Distance
   - 5-80 = Low end of the operating range in cm (in steps of 5)
@@ -203,18 +205,18 @@ The following image illustrates the effect of using positive and negative polari
 
 The third Setup screen contains settings that are dependent of the chosen TYPE of operation.
 
-![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
-
 **Settings of the third Setup screen - MIDI CC Changes:**
 
-![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
+![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
 
 **Settings of the third Setup screen - MIDI Notes:**
 
-![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
+![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
 
 **Settings of the third Setup screen - MIDI Chords:**
 
-![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
+![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
 
 **Settings of the third Setup screen - MIDI Pitchbend:**
+
+![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
