@@ -199,7 +199,10 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
   - 5-80 = High end of the operating range in cm (in steps of 5)
 - POLR: Polarity
   - POS = Positive mapping
-  - NEG = Negative mapping   
+  - NEG = Negative mapping
+    
+> [!NOTE]
+> The HDST must be higher than the LDST. This is enforced when setting the values. 
 
 The following image illustrates the effect of using positive and negative polarity.
 
@@ -208,6 +211,16 @@ The third Setup screen contains settings that are dependent of the chosen TYPE o
 **Settings of the third Setup screen - MIDI CC Changes:**
 
 ![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
+
+- CNTR: Controller number
+  - 0-127 = MIDI CC number
+- LVAL: Low Value
+  - 0-127 = Lowest value generated
+- HVAL: High Value
+  - 0-127 = Highest value generated
+
+> [!NOTE]
+> The HVAL must be higher than the LVAL. This is enforced when setting the values. 
 
 **Settings of the third Setup screen - MIDI Notes:**
 
