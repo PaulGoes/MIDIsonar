@@ -142,7 +142,8 @@ MIDI controller B:
 - MIDI channel 2.
 - Sending MIDI NOTES using a chromatic scale with root note C3 divided in 24 steps.
 
-When in Play mode the activity LED's for controller A and controller B indicate whether the controller is active (lit) or not (dimmed).
+> [!NOTE]
+> When in Play mode the activity LED's for controller A and controller B indicate whether the controller is active (lit) or not (dimmed).
 
 When in Play mode the LCD screen gives visual feedback on the controls. For the default setup it shows the following information.
 
