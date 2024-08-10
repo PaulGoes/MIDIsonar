@@ -99,7 +99,7 @@ To build the MIDIsonar you need the following components.
 
 If you want to build a more permanent solution you might want to solder the components and you additionally need protyping PCB boards and soldering equipment.
 
-If you want to build it into a case you might additionally need wood, paint and screws (wooden case) or 3D printing equipment (3D printed plastic case).
+If you want to build it into an enclosure you might additionally need wood, paint and screws (wooden enclosure or 3D printing equipment (3D printed plastic enclosure).
 
 ### GPIO Pin definitions
 
@@ -126,6 +126,12 @@ The software uses the following libraries:
 - NewPing.h - to interface with the ultrasonic sensors
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
+
+## Photo's
+
+Here are some photo's of my MIDIsonar to give you inspiration to design you own enclosure.
+
+![MIDIsonar Photos](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDISonar%20Photos.png)
 
 ## User Manual
 
