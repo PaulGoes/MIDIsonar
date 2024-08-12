@@ -298,3 +298,6 @@ The following image illustrates the effect of using positive and negative polari
 The following image shows the effect of using the pitchbend types and neutral zone sizes.
 
 ![MIDIsonar Pitchbend](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Pitchbend.png)
+
+> [!NOTE]
+> The neutral zone is comparable to a pitchbend wheel in its neutral/center position. The pitchbend maximum is comparable to a pitchbend wheel completely up or down. As with the pitchbend wheel this doesn't say anything about the actual pitchbend in semitones. The semitone range of the pitchbend is determined by the setup of the synthesizer. On most synthesizers it is even possible to setup different semitone ranges for pitchbend up and pitchbend down. 
