@@ -224,6 +224,8 @@ The third Setup screen contains settings that are dependent of the chosen TYPE o
 
 **Settings of the third Setup screen - MIDI Notes:**
 
+![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
+
 - SCAL: Musicial note scale
   - CHR = Chromatic scale
   - MAJ = Major scale
@@ -238,10 +240,8 @@ The third Setup screen contains settings that are dependent of the chosen TYPE o
   - 8WH = Octatonic Whole Half scale
   - 8HW = Octatonic Half Whole scale
 - ROOT: Root note for the scale
-  -  12-119 - ** look up how the low ones are displayed octave -1??? kan niet!
+  -  12-119 - ** look up how the low ones are displayed octave -1???
 -  RANG: Number of scale notes to be played
-
-![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
 
 **Settings of the third Setup screen - MIDI Chords:**
 
