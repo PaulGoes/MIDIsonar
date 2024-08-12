@@ -136,8 +136,8 @@ NewPing sonarB(triggerPinB, echoPinB, 100);   /* NewPing setup of sonar A pins a
 
 /* initialize the data array with default values */
 int value[2][18] = {
-  { 1, 1, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
-  { 1, 2, 2, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
+  { 1, 1, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
+  { 1, 2, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
 };
 
 /* initialize the data array with valuetypes */
@@ -282,23 +282,18 @@ void MODEsetup()
   lcd.clear();
 
   /* initialize variables */
-  /*int menu_id = 0;        /* menu id of the selected menu item */
-  /*int menu_id_old = 3;    /* menu id of the previous menu item */
-  int screen_id;          /* screen id of the selected menu item */
-  int screen_id_old;      /* screen id of the previous menu item */
-
-  int controller_id;      /* controller id of the selected menu item */
-  int array_pos;          /* position of the selected menu item in the value array */
-
+  int screen_id;          /* screen id of the selected menu item                                                   */
+  int screen_id_old;      /* screen id of the previous menu item                                                   */
+  int controller_id;      /* controller id of the selected menu item                                               */
+  int array_pos;          /* position of the selected menu item in the value array                                 */
   int init_potval;        /* intial value read from the potentiometer at the selection of a new menu item [0-1023] */
-  int read_potval;        /* current value read from the potentiometer [0-1023] */
-  int prev_potval;        /* previous value read from the potentiometer [0-1023] */
+  int read_potval;        /* current value read from the potentiometer [0-1023]                                    */
+  int prev_potval;        /* previous value read from the potentiometer [0-1023]                                   */
   int prev_val;           /* previous value of the selected menu item as stored in the value array [type specific] */
-  int temp_val;           /* temporary value for the selected menu item [type specific] */
-  int treshold;           /* indicates whether value knob is turned past treshold (0=FALSE, 1=TRUE) */
-  bool buttonhold;        /* indicates whether value button is hold down */
-
-  char* valstr = "   ";   /* temporary string used to construct formatted string values */
+  int temp_val;           /* temporary value for the selected menu item [type specific]                            */
+  int treshold;           /* indicates whether value knob is turned past treshold (0=FALSE, 1=TRUE)                */
+  bool buttonhold;        /* indicates whether value button is hold down                                           */
+  char* valstr = "   ";   /* temporary string used to construct formatted string values                            */
 
   do 
   {
@@ -638,47 +633,46 @@ void MODEplay()
   lcd.clear();
 
   /* initialize variables */
-  int pingTimeOldA = 0;   /* previous ping time for controller A */
-  int lowRangeA;          /* low range ping controller A in microseconds */
-  int highRangeA;         /* high range ping controller A in microseconds */
-  int rangePolA;          /* polarity controller A */
-  int lowValA;            /* low value for controller A*/
-  int highValA;           /* high value for controller A*/
-  int newValA = 0;        /* current value measured for controller A */
-  int oldValA = 999;      /* previous value measured for controller A */
-  int noteStateA = 0;     /* state of the notes when type=NOTE: 0=off, 1=on */
-  int newNoteA = 0;       /* current note for controller A */
-  int oldNoteA = 0;       /* previous note for controller A */
-  int newChordA = 0;	    /* current chord for controller A */
-  int oldChordA = 0;	    /* previous chord for controller A */
-  int pbValA = 0;         /* calculated pitchbend value for controller A */
-  int pbRangeA = 0;       /* calculated pitchbend range for controller A */
-  int pbDeltaA = 0;       /* calculated pitchbend delta for controller A */
-  int pbDirA = 0;         /* calculated pitchbend direction for controller A */
-  int pbStateA = 0;       /* state of the pitchbend when type=PBND: 0=neutral, 1=bend */
+  int pingTimeOldA = 0;   /* previous ping time for controller A                        */
+  int lowRangeA;          /* low range ping controller A in microseconds                */
+  int highRangeA;         /* high range ping controller A in microseconds               */
+  int rangePolA;          /* polarity controller A                                      */
+  int lowValA;            /* low value for controller A                                 */
+  int highValA;           /* high value for controller A                                */
+  int newValA = 0;        /* current value measured for controller A                    */
+  int oldValA = 999;      /* previous value measured for controller A                   */
+  int noteStateA = 0;     /* state of the notes when type=NOTE: 0=off, 1=on             */
+  int newNoteA = 0;       /* current note for controller A                              */
+  int oldNoteA = 0;       /* previous note for controller A                             */
+  int newChordA = 0;	  /* current chord for controller A                             */
+  int oldChordA = 0;	  /* previous chord for controller A                            */
+  int pbValA = 0;         /* calculated pitchbend value for controller A                */
+  int pbRangeA = 0;       /* calculated pitchbend range for controller A                */
+  int pbDeltaA = 0;       /* calculated pitchbend delta for controller A                */
+  int pbDirA = 0;         /* calculated pitchbend direction for controller A            */
+  int pbStateA = 0;       /* state of the pitchbend when type=PBND: 0=neutral, 1=bend   */
 
-  int pingTimeOldB = 0;   /* previous ping time for controller B */
-  int lowRangeB;          /* low range ping controller B in microseconds */
-  int highRangeB;         /* high range ping controller B in microseconds */
-  int rangePolB;          /* polarity controller B */
-  int lowValB;            /* low value for controller B*/
-  int highValB;           /* high value for controller B*/
-  int newValB = 0;        /* current value measured for controller B */
-  int oldValB = 999;      /* previous value measured for controller B */
-  int noteStateB = 0;     /* State of the notes when type=NOTE: 0=off, 1=on */
-  int newNoteB = 0;       /* current note for controller B */
-  int oldNoteB = 0;       /* previous note for controller B */
-  int newChordB = 0;	    /* current chord for controller B */
-  int oldChordB = 0;	    /* previous chord for controller B */
-  int pbValB = 0;         /* calculated pitchbend value for controller B */
-  int pbRangeB = 0;       /* calculated pitchbend range for controller B */
-  int pbDeltaB = 0;       /* calculated pitchbend delta for controller B */
-  int pbDirB = 0;         /* calculated pitchbend direction for controller B */
-  int pbStateB = 0;       /* state of the pitchbend when type=PBND: 0=neutral, 1=bend */
+  int pingTimeOldB = 0;   /* previous ping time for controller B                        */
+  int lowRangeB;          /* low range ping controller B in microseconds                */
+  int highRangeB;         /* high range ping controller B in microseconds               */
+  int rangePolB;          /* polarity controller B                                      */
+  int lowValB;            /* low value for controller B                                 */
+  int highValB;           /* high value for controller B                                */
+  int newValB = 0;        /* current value measured for controller B                    */
+  int oldValB = 999;      /* previous value measured for controller B                   */
+  int noteStateB = 0;     /* State of the notes when type=NOTE: 0=off, 1=on             */
+  int newNoteB = 0;       /* current note for controller B                              */
+  int oldNoteB = 0;       /* previous note for controller B                             */
+  int newChordB = 0;	  /* current chord for controller B                             */
+  int oldChordB = 0;	  /* previous chord for controller B                            */
+  int pbValB = 0;         /* calculated pitchbend value for controller B                */
+  int pbRangeB = 0;       /* calculated pitchbend range for controller B                */
+  int pbDeltaB = 0;       /* calculated pitchbend delta for controller B                */
+  int pbDirB = 0;         /* calculated pitchbend direction for controller B            */
+  int pbStateB = 0;       /* state of the pitchbend when type=PBND: 0=neutral, 1=bend   */
 
-  int pingTime;           /* measured ping time between trigger and echo */
-  int displayTime = 0;    /* display update timer to avoid value flickering */
-
+  int pingTime;           /* measured ping time between trigger and echo                */
+  int displayTime = 0;    /* display update timer to avoid value flickering             */
   char* valstr = "   ";   /* temporary string used to construct formatted string values */
   char* pbstr = "   ";    /* temporary string used to construct formatted string values */
 
@@ -1321,7 +1315,7 @@ void MIDIchord(int channel, int notestate, int basenote, int chordtype)
 void MIDIpitchbend(int channel, int pbvalue)
 {
   /* initalize variables */
-  int statusbyte;         /* statusbyte to send to MIDI */
+  int statusbyte;         /* statusbyte to send to MIDI         */
   int dataMSB;            /* MSB portion of the pitchbend value */
   int dataLSB;            /* LSB portion of the pitchbend value */
 
