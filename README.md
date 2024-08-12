@@ -239,8 +239,8 @@ The third Setup screen contains settings that are dependent of the chosen TYPE o
   - MI5 = Minor Pentatonic scale
   - 8WH = Octatonic Whole Half scale
   - 8HW = Octatonic Half Whole scale
-- ROOT: Root note for the scale
-  -  12-119 - ** look up how the low ones are displayed octave -1???
+- ROOT: Root note
+  -  C0-B8 - Root note for the scale
 -  RANG: Number of scale notes to be played
 
 **Settings of the third Setup screen - MIDI Chords:**
