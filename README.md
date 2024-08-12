@@ -136,7 +136,7 @@ After a few seconds the MIDIsonar switches to the Standby Mode.
 
 ### Select Modes
 
-By pressing the ``:red_square:MODE`` button you can cycle trought the three modes Standby, Setup and Play.
+By pressing the :red_square:**MODE** button you can cycle trought the three modes Standby, Setup and Play.
 
 ![MIDIsonar Mode Select](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Mode%20Select.png)
 
