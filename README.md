@@ -177,6 +177,7 @@ You can select different settings by pressing the :blue_square:PREV button (prev
 
 > [!NOTE]
 > When you press the :blue_square:NEXT button at the last setting of controller B you will go to the first setting of controller A.<br/>
+>
 > When you press the :blue_square:PREV button at the first setting of controller A you will go to the last setting of controller B.
 
 You can change the value of the selected setting by pressing the :black_large_square:DEC button (decrease) and :black_large_square:INC button (increase). 
