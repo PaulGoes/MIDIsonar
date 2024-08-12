@@ -183,26 +183,26 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 
 ![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201.png)
 
-- ACTV: Active
+- **ACTV:** Active
   - ON = Active
   - OFF = Inactive
-- TYPE: Type of operation
+- **TYPE:** Type of operation
   - CC = Send MIDI CC changes
   - NOT = Send MIDI Notes
   - CHD = Send MIDI Chords
   - PB = Send MIDI Pitchbend
-- CHNL: MIDI Channel
+- **CHNL:** MIDI Channel
   - 1-16 = MIDI Channel number
 
 **Settings of the second Setup screen:**
 
 ![MIDIsonar Setup 2](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%202.png)
 
-- LDST: Low Distance
+- **LDST:** Low Distance
   - 5-80 = Low end of the operating range in cm (in steps of 5)
-- HDST: High Distance
+- **HDST:** High Distance
   - 5-80 = High end of the operating range in cm (in steps of 5)
-- POLR: Polarity
+- **POLR:** Polarity
   - POS = Positive mapping
   - NEG = Negative mapping
     
@@ -215,11 +215,11 @@ The following image illustrates the effect of using positive and negative polari
 
 ![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
 
-- CNTR: Controller number
+- **CNTR:** Controller number
   - 0-127 = MIDI CC number
-- LVAL: Low Value
+- **LVAL:** Low Value
   - 0-127 = Lowest value generated
-- HVAL: High Value
+- **HVAL:** High Value
   - 0-127 = Highest value generated
 
 > [!NOTE]
@@ -229,7 +229,7 @@ The following image illustrates the effect of using positive and negative polari
 
 ![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
 
-- SCAL: Musicial note scale
+- **SCAL:** Musicial note scale
   - CHR = Chromatic scale
   - MAJ = Major scale
   - MIN = Minor scale
@@ -242,15 +242,15 @@ The following image illustrates the effect of using positive and negative polari
   - MI5 = Minor Pentatonic scale
   - 8WH = Octatonic Whole Half scale
   - 8HW = Octatonic Half Whole scale
-- ROOT: Root note
+- **ROOT:** Root note
   -  C0-B8 - Root note for the scale
--  RANG: Number of scale notes to be played
+-  **RANG:** Number of scale notes to be played
 
 **Settings of the third Setup screen - MIDI Chords:**
 
 ![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
 
-- PROG: Musical chord progression
+- **PROG:** Musical chord progression
   - MAJ = Major chord progression
   - MIN = Minor chord progression
   - MAB = Major Blues 7th chord progession
@@ -260,23 +260,23 @@ The following image illustrates the effect of using positive and negative polari
   - MOD = Modal chord progression
   - GSP = Gospel chord progression
   - PBL = Pachelbel chord progression
-- ROOT: Root nor
+- **ROOT:** Root nor
   - C0-B8 - Root note for the chord progression
-- RANG: Number of progression chords to be played 
+- **RANG:** Number of progression chords to be played 
 
 **Settings of the third Setup screen - MIDI Pitchbend:**
 
 ![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
 
-- TYPE: Pitchbend type
+- **TYPE:** Pitchbend type
   - UP = Bend the pitch up
   - DWN = Bend the pitch down
   - U&D = Bend the pitch up and down  
-- NTRL: Neutral zone size
+- **NTRL:** Neutral zone size
   - SML = Small
   - MED = Medium
   - LRG = Large
-- PBFX: Pitchbend effects
+- **PBFX:** Pitchbend effects
   - FLW = Flowing pitch bend
   - STP = Stepping pitch bend  
 
