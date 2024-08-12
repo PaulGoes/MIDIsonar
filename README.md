@@ -114,11 +114,11 @@ Here are some photo's of my MIDIsonar to give you inspiration to design you own 
 
 ## User Manual
 
-When you power on the MIDI Sonar it starts up with the welcome screen that displays the software version.
+When you power on the MIDIsonar it starts up with the welcome screen that displays the software version.
 
 ![MIDIsonar Welcome](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Welcome%20Screen.png)
 
-After a few seconds the MIDI Sonar switches to the Standby Mode.
+After a few seconds the MIDIsonar switches to the Standby Mode.
 
 ![MIDIsonar Standby](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Standby.png)
 
