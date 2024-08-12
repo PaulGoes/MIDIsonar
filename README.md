@@ -108,11 +108,13 @@ The software consists of a setup() that initializes the MIDIsonar and displays t
 
 The software contains the following functions/subroutines:
 
-- MODEstandby() - implements the Standby mode
-- MODEsetup() - implements the Setup mode
-- MODEplay() - implements the Play mode
-- 
-
+- ``MODEstandby()`` - implements the Standby mode
+- ``MODEsetup()`` - implements the Setup mode
+- ``MODEplay()`` - implements the Play mode
+- ``value2string()`` - converts values to strings for displaying purposes
+- ``MIDIchord()`` - play chords by decomposing to individual notes
+- ``MIDIpitchbend()`` - play pitchbend
+- ``MIDImessage()`` - send individual MIDI message
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
 
