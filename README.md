@@ -261,6 +261,10 @@ The following image illustrates the effect of using positive and negative polari
   -  C0-B8 - Root note for the scale
 -  **RANG:** Number of scale notes to be played
 
+The following image shows the notes of the different scales for the root note C.
+
+![MIDISonar Scales](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Scales.png)
+
 ### Settings of the third Setup screen - MIDI Chords
 
 ![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
