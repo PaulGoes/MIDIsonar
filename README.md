@@ -295,3 +295,6 @@ The following image illustrates the effect of using positive and negative polari
   - FLW = Flowing pitch bend
   - STP = Stepping pitch bend  
 
+The following image shows the effect of using the pitchbend types and neutral zone sizes.
+
+![MIDIsonar Pitchbend](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Pitchbend.png)
