@@ -267,3 +267,16 @@ The following image illustrates the effect of using positive and negative polari
 **Settings of the third Setup screen - MIDI Pitchbend:**
 
 ![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
+
+- TYPE: Pitchbend type
+  - UP = Bend the pitch up
+  - DWN = Bend the pitch down
+  - U&D = Bend the pitch up and down  
+- NTRL: Neutral zone size
+  - SML = Small
+  - MED = Medium
+  - LRG = Large
+- PBFX: Pitchbend effects
+  - FLW = Flowing pitch bend
+  - STP = Stepping pitch bend  
+
