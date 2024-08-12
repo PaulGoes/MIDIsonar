@@ -101,8 +101,18 @@ In the software the pins are defined at the beginning of the code. If you use an
 ### Software
 
 The software uses the following libraries:
-- LiquidCrystal.h - to interface with the LCD screen
-- NewPing.h - to interface with the ultrasonic sensors
+- ``LiquidCrystal.h`` - to interface with the LCD screen
+- ``NewPing.h`` - to interface with the ultrasonic sensors
+
+The software consists of a setup() that initializes the MIDIsonar and displays the welcome message and a loop() that cycles through the three operational modes Standby, Setup and Play.
+
+The software contains the following functions/subroutines:
+
+- MODEstandby() - implements the Standby mode
+- MODEsetup() - implements the Setup mode
+- MODEplay() - implements the Play mode
+- 
+
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
 
