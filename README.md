@@ -192,7 +192,7 @@ You can change the value of the selected setting by pressing the :black_large_sq
 
 Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. The third page has settings that are dependent of the chosen type of operation on page 1.
 
-### Settings of the first Setup screen:
+### Settings of the first Setup screen
 
 ![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201.png)
 
@@ -207,7 +207,7 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 - **CHNL:** MIDI Channel
   - 1-16 = MIDI Channel number
 
-### Settings of the second Setup screen:
+### Settings of the second Setup screen
 
 ![MIDIsonar Setup 2](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%202.png)
 
@@ -226,7 +226,7 @@ The following image illustrates the effect of using positive and negative polari
 
 ![MIDIsonar Polarity](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Polarity.png)
 
-### Settings of the third Setup screen - MIDI CC Changes:
+### Settings of the third Setup screen - MIDI CC Changes
 
 ![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
 
@@ -240,7 +240,7 @@ The following image illustrates the effect of using positive and negative polari
 > [!NOTE]
 > The HVAL must be higher than the LVAL. This is enforced when setting the values. 
 
-### Settings of the third Setup screen - MIDI Notes:
+### Settings of the third Setup screen - MIDI Notes
 
 ![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
 
@@ -261,7 +261,7 @@ The following image illustrates the effect of using positive and negative polari
   -  C0-B8 - Root note for the scale
 -  **RANG:** Number of scale notes to be played
 
-### Settings of the third Setup screen - MIDI Chords:
+### Settings of the third Setup screen - MIDI Chords
 
 ![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
 
@@ -279,7 +279,7 @@ The following image illustrates the effect of using positive and negative polari
   - C0-B8 - Root note for the chord progression
 - **RANG:** Number of progression chords to be played 
 
-### Settings of the third Setup screen - MIDI Pitchbend:
+### Settings of the third Setup screen - MIDI Pitchbend
 
 ![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
 
