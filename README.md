@@ -177,7 +177,7 @@ You can change the value of the selected setting by pressing the DEC (decrease) 
 
 **Setup Screen organization**
 
-Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. 
+Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. The third page has settings that are dependent of the chosen type of operation on page 1.
 
 **Settings of the first Setup screen:**
 
@@ -186,13 +186,13 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 - ACTV: Active
   - ON = Active
   - OFF = Inactive
-- TYPE:
+- TYPE: Type of operation
   - CC = Send MIDI CC changes
   - NOT = Send MIDI Notes
   - CHD = Send MIDI Chords
   - PB = Send MIDI Pitchbend
-- CHNL:
-  - 1-16 = MIDI Channel 
+- CHNL: MIDI Channel
+  - 1-16 = MIDI Channel number
 
 **Settings of the second Setup screen:**
 
@@ -210,8 +210,6 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 > The HDST must be higher than the LDST. This is enforced when setting the values. 
 
 The following image illustrates the effect of using positive and negative polarity.
-
-The third Setup screen contains settings that are dependent of the chosen TYPE of operation.
 
 **Settings of the third Setup screen - MIDI CC Changes:**
 
@@ -251,6 +249,20 @@ The third Setup screen contains settings that are dependent of the chosen TYPE o
 **Settings of the third Setup screen - MIDI Chords:**
 
 ![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
+
+- PROG: Musical chord progression
+  - MAJ = Major chord progression
+  - MIN = Minor chord progression
+  - MAB = Major Blues 7th chord progession
+  - MIB = Minor Blues 7th chord progression
+  - POP = Pop chord progression
+  - JAZ = Jazz chord progression
+  - MOD = Modal chord progression
+  - GSP = Gospel chord progression
+  - PBL = Pachelbel chord progression
+- ROOT: Root nor
+  - C0-B8 - Root note for the chord progression
+- RANG: Number of progression chords to be played 
 
 **Settings of the third Setup screen - MIDI Pitchbend:**
 
