@@ -136,7 +136,7 @@ After a few seconds the MIDIsonar switches to the Standby Mode.
 
 ### Select Modes
 
-By pressing the MODE button you can cycle trought the three modes Standby, Setup and Play.
+By pressing the :red_square:MODE button you can cycle trought the three modes Standby, Setup and Play.
 
 ![MIDIsonar Mode Select](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Mode%20Select.png)
 
@@ -173,16 +173,16 @@ When you go into Setup Mode for the first time you are presented the first setup
 
 The cursor (a thin line at the bottom) indicates which setting is currently selected. 
 
-You can select different settings by pressing the PREV (previous) and NEXT (next) buttons. By pressing the PREV and NEXT buttons you cycle through the settings of controller A and controller B. 
+You can select different settings by pressing the :blue_square:PREV button (previous) and :blue_square:NEXT button (next). By pressing the :blue_square:PREV and :blue_square:NEXT buttons you cycle through the settings of controller A and controller B. 
 
 > [!NOTE]
 > When you press the :blue_square:NEXT button at the last setting of controller B you will go to the first setting of controller A.<br/>
-> When you press the PREV button at the first setting of controller A you will go to the last setting of controller B.
+> When you press the :blue_square:PREV button at the first setting of controller A you will go to the last setting of controller B.
 
-You can change the value of the selected setting by pressing the DEC (decrease) and INC (increase) buttons. 
+You can change the value of the selected setting by pressing the :black_large_square:DEC button (decrease) and :black_large_square:INC button (increase). 
 
 > [!TIP]
-> If you keep either button pressed it will scroll faster through the values.
+> If you keep either :black_large_square:DEC or :black_large_square:INC button pressed it will scroll faster through the values.
 
 > [!NOTE]
 > When you return to Setup Mode after visiting Play mode you will return to the most recently edited setting.
