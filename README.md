@@ -223,6 +223,8 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 
 The following image illustrates the effect of using positive and negative polarity.
 
+![MIDIsonar Polarity](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Polarity.png)
+
 **Settings of the third Setup screen - MIDI CC Changes:**
 
 ![MIDIsonar Setup 3 CC](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CC.png)
