@@ -134,12 +134,12 @@ The MIDIsonar has a default setup and you can immediately use it by going to the
 
 MIDI controller A: 
 - Active with a range from 5cm to 50cm, positive polarity.
-- MIDI channel 2.
+- MIDI channel 1.
 - Sending MIDI CC 7 (Volume) over the full range of 0 to 127.
   
 MIDI controller B: 
 - Active with a range from 5cm to 50cm, positive polarity.
-- MIDI channel 2.
+- MIDI channel 1.
 - Sending MIDI NOTES using a chromatic scale with root note C3 divided in 24 steps.
 
 > [!NOTE]
@@ -149,7 +149,7 @@ When in Play mode the LCD screen gives visual feedback on the controls. For the 
 
 ![MIDIsonar Play Default](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Play%20Default.png)
 
-You can read from this screen that controller A is now sending CC 7 with a value 32 and controller B is now sending note G#3 both on MIDI channel 2.
+You can read from this screen that controller A is now sending CC 7 with a value 32 on MIDI channel 1 and controller B is now sending note G#3 also on MIDI channel 1.
 
 ### Setup Mode
 
@@ -171,6 +171,11 @@ You can change the value of the selected setting by pressing the DEC (decrease) 
 
 > [!NOTE]
 > If you keep either button pressed it will scroll faster through the values.
+
+> [!NOTE]
+> When you return to Setup Mode after visiting Play mode you will return to the most recently edited setting.
+
+**Setup Screen organization**
 
 Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. 
 
