@@ -169,7 +169,7 @@ You can select different settings by pressing the PREV (previous) and NEXT (next
 
 You can change the value of the selected setting by pressing the DEC (decrease) and INC (increase) buttons. 
 
-> [!NOTE]
+> [!TIP]
 > If you keep either button pressed it will scroll faster through the values.
 
 > [!NOTE]
