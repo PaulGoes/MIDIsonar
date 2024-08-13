@@ -134,6 +134,8 @@ After a few seconds the MIDIsonar switches to the Standby Mode.
 
 ![MIDIsonar Standby](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Standby.png)
 
+&nbsp
+
 ### Select Modes
 
 By pressing the :red_square:**MODE** button you can cycle trought the three modes Standby, Setup and Play.
