@@ -10,6 +10,8 @@ Each gesture controller uses a ultrasonic sensor that measures the distance betw
 
 By varying the distance between your hands and the ultrasonic sensors you ***generate musical information*** that can be send over the MIDI Out to any MIDI capable device like your synthesizer, drum machine or DAW.
 
+<br/>
+
 ### MIDI information generated
 
 MIDISonar lets you generate the following MIDI information:
@@ -26,6 +28,8 @@ MIDISonar lets you generate the following MIDI information:
     - Selectable direction (up, down, up&down).
     - Selectable value range (min and max) and neutral zone .
 
+<br/>
+
 ### Controller Configuration
 
 For both controllers the following settings are available:
@@ -37,6 +41,8 @@ For both controllers the following settings are available:
     - Set the polarity of the controller, e.g. CC values increase or decrease when your hand is raised.
 - **MIDI Channel:**
     - Set the MIDI channel of the controller so you can use both on the same or on different MIDI channels.
+
+<br/>
 
 ### Musical usage examples
 
@@ -53,11 +59,15 @@ If set to the same MIDI channel the MIDIsonar can e.g. be used to:
 
 You can build the MIDIsonar yourself. Just build it up like shown below and load the MIDIsonar.ino into the Arduino UNO. 
 
+<br/>
+
 ### Schematic
 
 Connect the various components as shown in this schematic diagram.
 
 ![MIDIsonar Schematic](https://github.com/PaulGoes/MIDIsonar/blob/master/MIDIsonar%20Schematic.jpg)
+
+<br/>
 
 ### Bill Of Materials
 
@@ -80,6 +90,8 @@ If you want to build a more permanent solution you might want to solder the comp
 
 If you want to build it into an enclosure you might additionally need wood, paint and screws (wooden enclosure or 3D printing equipment (3D printed plastic enclosure).
 
+<br/>
+
 ### GPIO Pin definitions
 
 The MIDIsonar defines the GPIO pins of the Arduino UNO as follows.
@@ -97,6 +109,8 @@ The MIDIsonar defines the GPIO pins of the Arduino UNO as follows.
 | D9 | Sensor A Echo | A5 | Button DEC |
 
 In the software the pins are defined at the beginning of the code. If you use another type of Arduino than an Arduino UNO, you might have to change the pin numbers to the corresponding ones for the type that you use.
+
+<br/>
 
 ### Software
 
