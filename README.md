@@ -240,6 +240,13 @@ The following image illustrates the effect of using positive and negative polari
 > [!NOTE]
 > The HVAL must be higher than the LVAL. This is enforced when setting the values. 
 
+> [!NOTE]
+> The use of MIDI CC is synthesizer specific. So the manufacturer of the synthesizer determines which CC value controls what parameter of the sound engine. So take a look at the manual of the syntheiszer for a mapping of the synth values. Most likely there will be an appendix with a name of MIDI controller list (or equivalent).
+
+The following image illustrates controlling the filter cutoff (controller A) and filter resonance (controller B) on a Novation KS-rack synthesizer module. 
+
+![MIDIsonar Control Chnage](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Control%20Change.png)
+
 ### Settings of the third Setup screen - MIDI Notes
 
 ![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
@@ -279,7 +286,7 @@ The following image shows the notes of the different scales for the root note C.
   - MOD = Modal chord progression (undocumented)
   - GSP = Gospel chord progression (undocumented)
   - PBL = Pachelbel chord progression (undocumented)
-- **ROOT:** Root nor
+- **ROOT:** Root note
   - C0-B8 - Root note for the chord progression
 - **RANG:** Number of progression chords to be played 
 
