@@ -134,13 +134,15 @@ After a few seconds the MIDIsonar switches to the Standby Mode.
 
 ![MIDIsonar Standby](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Standby.png)
 
-&nbsp
+<br/>
 
 ### Select Modes
 
 By pressing the :red_square:**MODE** button you can cycle trought the three modes Standby, Setup and Play.
 
 ![MIDIsonar Mode Select](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Mode%20Select.png)
+
+<br/>
 
 ### Play Mode
 
@@ -164,6 +166,8 @@ When in Play mode the LCD screen gives visual feedback on the controls. For the 
 ![MIDIsonar Play Default](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/Play%20Default.png)
 
 You can read from this screen that controller A is now sending CC 7 with a value 32 on MIDI channel 1 and controller B is now sending note G#3 also on MIDI channel 1.
+
+<br/>
 
 ### Setup Mode
 
@@ -190,9 +194,13 @@ You can change the value of the selected setting by pressing the :black_large_sq
 > [!NOTE]
 > When you return to Setup Mode after visiting Play mode you will return to the most recently edited setting.
 
+<br/>
+
 ### Setup Screen organization
 
 Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. The third page has settings that are dependent of the chosen type of operation on page 1.
+
+<br/>
 
 ### Settings of the first Setup screen
 
@@ -208,6 +216,8 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
   - PB = Send MIDI Pitchbend
 - **CHNL:** MIDI Channel
   - 1-16 = MIDI Channel number
+
+<br/>
 
 ### Settings of the second Setup screen
 
@@ -251,6 +261,8 @@ The following image illustrates controlling the filter cutoff (controller A) and
 
 ![MIDIsonar Control Chnage](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Control%20Change.png)
 
+<br/>
+
 ### Settings of the third Setup screen - MIDI Notes
 
 ![MIDIsonar Setup 3 NOT](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-NOTE.png)
@@ -276,6 +288,8 @@ The following image shows the notes of the different scales for the root note C.
 
 ![MIDISonar Scales](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Scales.png)
 
+<br/>
+
 ### Settings of the third Setup screen - MIDI Chords
 
 ![MIDIsonar Setup 3 CHD](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-CHRD.png)
@@ -297,6 +311,8 @@ The following image shows the notes of the different scales for the root note C.
 The following image shows the chords of the different progressions for the root note C.
 
 ![MIDIsonar Progressions](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Chord%20Progressions.png)
+
+<br/>
 
 ### Settings of the third Setup screen - MIDI Pitchbend
 
