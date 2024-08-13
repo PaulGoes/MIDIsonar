@@ -275,10 +275,10 @@ The following image shows the notes of the different scales for the root note C.
   - MAB = Major Blues 7th chord progession
   - MIB = Minor Blues 7th chord progression
   - POP = Pop chord progression
-  - JAZ = Jazz chord progression
-  - MOD = Modal chord progression
-  - GSP = Gospel chord progression
-  - PBL = Pachelbel chord progression
+  - JAZ = Jazz chord progression (experimental/undocumented)
+  - MOD = Modal chord progression (experimental/undocumented)
+  - GSP = Gospel chord progression (experimental/undocumented)
+  - PBL = Pachelbel chord progression (experimental/undocumented)
 - **ROOT:** Root nor
   - C0-B8 - Root note for the chord progression
 - **RANG:** Number of progression chords to be played 
