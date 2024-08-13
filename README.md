@@ -241,7 +241,7 @@ The following image illustrates the effect of using positive and negative polari
 > The HVAL must be higher than the LVAL. This is enforced when setting the values. 
 
 > [!NOTE]
-> The use of MIDI CC is synthesizer specific. So the manufacturer of the synthesizer determines which CC value controls what parameter of the sound engine. So take a look at the manual of the syntheiszer for a mapping of the synth values. Most likely there will be an appendix with a name of MIDI controller list (or equivalent).
+> The use of MIDI CC is synthesizer specific. So the manufacturer of the synthesizer determines which CC value controls what parameter of the sound engine. So take a look at the manual of the syntheiszer for a mapping of the CC values. Most likely there will be an appendix with a name of MIDI controller list (or equivalent).
 
 The following image illustrates controlling the filter cutoff (controller A) and filter resonance (controller B) on a Novation KS-rack synthesizer module. 
 
