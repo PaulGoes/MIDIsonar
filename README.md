@@ -283,6 +283,10 @@ The following image shows the notes of the different scales for the root note C.
   - C0-B8 - Root note for the chord progression
 - **RANG:** Number of progression chords to be played 
 
+The following image shows the chords of the different progressions for the root note C.
+
+![MIDIsonar Progressions](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Chord%20Progressions.png)
+
 ### Settings of the third Setup screen - MIDI Pitchbend
 
 ![MIDIsonar Setup 3 PB](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%203-PB.png)
