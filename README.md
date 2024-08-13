@@ -55,6 +55,8 @@ If set to the same MIDI channel the MIDIsonar can e.g. be used to:
 - Control the volume of a sound with the left hand and control the pitch of the same sound to play the sound like a theremin.
 - Trigger a single bass drum note with the left hand and trigger another single snare drum note with the right hand to play air drums.
 
+<br/>
+
 ## Build it Yourself
 
 You can build the MIDIsonar yourself. Just build it up like shown below and load the MIDIsonar.ino into the Arduino UNO. 
@@ -132,11 +134,15 @@ The software contains the following functions/subroutines:
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
 
+<br/>
+
 ## Photo's
 
 Here are some photo's of my MIDIsonar to give you inspiration to design you own enclosure.
 
 ![MIDIsonar Photos](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDISonar%20Photos.png)
+
+<br/>
 
 ## User Manual
 
