@@ -138,7 +138,7 @@ The sketch uses 15010 bytes (46%) of program storage space. Global variables use
 
 ### Adapt the Software
 
-The MIDIsonar uses a default setup for the controllers that is loaded when the MIDIsonar is turned on. You can change the default setup if you want.
+The MIDIsonar uses a default setup for the controllers. This default setup is loaded when the MIDIsonar is turned on. You can change this defaults if you want the MIDIsonar to start up with a different setup.
 
 The default setup for the two controllers is defined at [line 137](https://github.com/PaulGoes/MIDIsonar/blob/b069583abb0d174fe831ef4dbfc4291921db8744/MIDIsonar.ino#L137) of the code.
 
