@@ -158,6 +158,7 @@ The settings map to the following:
 
 The defaults of both controllers are basically the same:
 
+- Both send on MIDI channel 1 (CHNL) with a working range from 5 cm (LDST) to 50 cm (HDST).
 - Controller A is set to TYPE 1 which means to send MIDI CC information. So it uses the config for the CC information: sending CC 7 (CC CNTR) over the full range of 0 (CC LVAL) to 127 (CC HVAL).
 - Controller B is set to type 2 which means to send MIDI NOTE information. So it uses the config for the NOT information: using the chromatic scale (NOT SCAL) with root note C3 (NOT ROOT) and a range of 24 notes (NOT RANG).
 
