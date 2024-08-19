@@ -166,6 +166,12 @@ The file [MIDIsonar datastructure pdf](https://github.com/PaulGoes/MIDIsonar/blo
 
 <br/>
 
+### Change the controller sensitivity
+
+
+
+<br/>
+
 ## Photo's
 
 Here are some photo's of my MIDIsonar to give you inspiration to design you own enclosure.
