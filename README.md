@@ -134,7 +134,7 @@ The software contains the following functions/subroutines:
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
 
-br/>
+<br/>
 
 ### Adapt the Software
 
@@ -148,7 +148,6 @@ int value[2][18] = {
   { 1, 1, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
   { 1, 2, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
 ```
-
 
 <br/>
 
