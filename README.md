@@ -259,7 +259,7 @@ When you go into Setup Mode for the first time you are presented the first setup
 
 The cursor (a thin line at the bottom) indicates which setting is currently selected. 
 
-You can select different settings by pressing the :blue_square:**PREV** button (previous) and :blue_square:**NEXT** button (next). By pressing these buttons you cycle through the settings of controller A and controller B: page A1 -> page A2 -> page A3 -> page B1 -> page B2 -> page B3.
+You can select different settings by pressing the :blue_square:**PREV** button (previous) and :blue_square:**NEXT** button (next). By pressing these buttons you cycle through the settings of controller A and controller B.
 
 > [!NOTE]
 > When you press the :blue_square:**NEXT** button at the last setting of controller B you will go to the first setting of controller A.<br/>
@@ -278,7 +278,7 @@ You can change the value of the selected setting by pressing the :black_large_sq
 
 ### Setup Screen organization
 
-Each controller is configured by 9 settings arranged in 3 pages of 3 settings each. The third page has settings that are dependent of the chosen type of operation on page 1.
+Each controller is configured by 9 settings arranged in 3 screens of 3 settings each. The third screen has settings that are dependent of the chosen type of operation on screen 1.
 
 ![MIDIsonar Setup Organization](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Setup%20Overview.png)
 
