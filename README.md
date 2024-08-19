@@ -168,7 +168,21 @@ The file [MIDIsonar datastructure pdf](https://github.com/PaulGoes/MIDIsonar/blo
 
 ### Change the controller sensitivity
 
+The MIDIsonar's sensitivity can be changed in two different ways: configuring the ping medians and configuring the wiggle room.
 
+The ping medians are defined at [line 149](https://github.com/PaulGoes/MIDIsonar/blob/b069583abb0d174fe831ef4dbfc4291921db8744/MIDIsonar.ino#L149) of the code.
+
+```
+/* initialize the data array with ping medians */
+int pingmedian[4] = { 2, 3, 3, 2 };
+```
+
+The wiggel rooms are defined at [line 152](https://github.com/PaulGoes/MIDIsonar/blob/b069583abb0d174fe831ef4dbfc4291921db8744/MIDIsonar.ino#L152) of the code.
+
+```
+/* initalize the data array with wiggle room */
+int wiggleroom[4] = { 10, 10, 10, 0 };
+```
 
 <br/>
 
