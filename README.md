@@ -154,6 +154,11 @@ The settings map to the following:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | --- | --- | --- | --- | --- | --- | --- | CC | CC | CC | NOT | NOT | NOT | CHD | CHD | CHD | PB | PB | PB |
 | A | 1 | 1 | 1 | 5 | 50 | 1 | 7 | 0 | 127 | 1 | 60 | 24 | 1 | 60 | 14 | 3 | 3 | 1 |
+| B | 1 | 2 | 1 | 5 | 50 | 1 | 7 | 0 | 127 | 1 | 60 | 24 | 1 | 60 | 14 | 3 | 3 | 1 |
+
+The defaults of both controllers are basically the same. But controller A is set to TYPE 1 which means to send MIDI CC information. So it uses the config for the CC information: sending CC 7 (CC CNTR) over the full range of 0 (CC LVAL) to 127 (CC HVAL). And controller B is set to type 2 which means to send MIDI NOTE information. So it uses the config for the NOT information: using the chromatic scale (NOT SCAL) with root note C3 (NOT ROOT) and a range of 24 notes (NOT RANG).
+
+The file [MIDIsonar datastructure pdf](https://github.com/PaulGoes/MIDIsonar/blob/master/MIDIsonar%20Datastructure.pdf) defines the settings and the values that can be used.
 
 <br/>
 
