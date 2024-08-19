@@ -136,7 +136,7 @@ The sketch uses 15010 bytes (46%) of program storage space. Global variables use
 
 <br/>
 
-### Adapt the Software
+### Change the default controller setup
 
 The MIDIsonar uses a default setup for the controllers. This default setup is loaded when the MIDIsonar is turned on. You can change this defaults if you want the MIDIsonar to start up with a different setup.
 
@@ -148,6 +148,12 @@ int value[2][18] = {
   { 1, 1, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
   { 1, 2, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
 ```
+
+The settings map to the following: 
+| ACTV | TYPE | CHNL | LDST | HDST | POLR | CNTR | LVAL | HVAL | SCAL | ROOT | RANG | PROG | ROOT | RANG | TYPE | NTRL | PBFX |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+
 
 <br/>
 
