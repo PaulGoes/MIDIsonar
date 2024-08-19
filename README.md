@@ -180,7 +180,7 @@ int pingmedian[4] = { 2, 3, 3, 2 };
 The ultrasonic sensors work by sending a ping and measuring the time until they receive the echo. In order to prevent rogue measurements, it is possible to send multiple pings, discard the out-of-range measurements and calculate an average. The ping medians define how many pings are used for each type of operation: MIDI CC (2), MIDI Notes (3), MIDI Chords (3), and MIDI Pitchbend (2).
 
 > [!NOTE]
-> Using more pings makes the measurements more reliable, but also makes the MIDIsonar to react slower to the hand movements. So changing the ping medians is an act of balancing reliability vs performance.
+> Increasing the number of pings makes the measurements more reliable, but also makes the MIDIsonar react slower to the hand movements. So changing the ping medians is an act of balancing reliability vs performance.
 
 The wiggle rooms are defined at [line 152](https://github.com/PaulGoes/MIDIsonar/blob/b069583abb0d174fe831ef4dbfc4291921db8744/MIDIsonar.ino#L152) of the code.
 
@@ -188,6 +188,8 @@ The wiggle rooms are defined at [line 152](https://github.com/PaulGoes/MIDIsonar
 /* initalize the data array with wiggle room */
 int wiggleroom[4] = { 10, 10, 10, 0 };
 ```
+
+
 
 <br/>
 
