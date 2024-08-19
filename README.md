@@ -280,7 +280,7 @@ You can change the value of the selected setting by pressing the :black_large_sq
 
 Each controller is configured by 9 settings arranged in 3 screens of 3 settings each. The third screen has settings that are dependent of the chosen type of operation on screen 1.
 
-![MIDIsonar Setup Organization](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Setup%20Overview.png)
+![MIDIsonar Setup Organization](https://github.com/PaulGoes/MIDIsonar/blob/master/Images/MIDIsonar%20Setup%20Screens.png)
 
 <br/>
 
