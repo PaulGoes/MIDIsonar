@@ -153,8 +153,8 @@ The settings map to the following:
 | Controller| ACTV | TYPE | CHNL | LDST | HDST | POLR | CNTR | LVAL | HVAL | SCAL | ROOT | RANG | PROG | ROOT | RANG | TYPE | NTRL | PBFX |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |  | CC | CC | CC | NOT | NOT | NOT | CHD | CHD | CHD | PB | PB | PB |
-| A | ``1`` | ``1`` | ``1`` | ``5`` | ``50`` | ``1`` | ``7`` | ``0`` | ``127`` | 1 | 60 | 24 | 1 | 60 | 14 | 3 | 3 | 1 |
-| B | ``1`` | ``2`` | ``1`` | ``5`` | ``50`` | 1 | 7 | 0 | 127 | ``1`` | ``60`` | ``24`` | 1 | 60 | 14 | 3 | 3 | 1 |
+| A | 1 | 1 | 1 | 5 | 50 | 1 | 7 | 0 | 127 | 1 | 60 | 24 | 1 | 60 | 14 | 3 | 3 | 1 |
+| B | 1 | 2 | 1 | 5 | 50 | 1 | 7 | 0 | 127 | 1 | 60 | 24 | 1 | 60 | 14 | 3 | 3 | 1 |
 
 The defaults of both controllers are basically the same:
 
