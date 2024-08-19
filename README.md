@@ -134,6 +134,22 @@ The software contains the following functions/subroutines:
 
 The sketch uses 15010 bytes (46%) of program storage space. Global variables use 1894 bytes (92%) of dynamic memory.
 
+br/>
+
+### Adapt the Software
+
+The MIDIsonar uses a default setup for the controllers that is loaded when the MIDIsonar is turned on. You can change the default setup if you want.
+
+The default setup for the two controllers is defined at [line 137](https://github.com/PaulGoes/MIDIsonar/blob/b069583abb0d174fe831ef4dbfc4291921db8744/MIDIsonar.ino#L137) of the code.
+
+```
+/* initialize the data array with default values */
+int value[2][18] = {
+  { 1, 1, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 },	/* controller A: Active | CC 7 Volume over full range 0-127               */
+  { 1, 2, 1, 5, 50, 1, 7, 0, 127, 1, 60, 24, 1, 60, 14, 3, 3, 1 }  	/* controller B: Active | NOTE Chromatic scale with root C3 with 24 steps */
+```
+
+
 <br/>
 
 ## Photo's
