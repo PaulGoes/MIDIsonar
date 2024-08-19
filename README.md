@@ -231,7 +231,7 @@ In Setup mode you can configure the settings for both controllers.
 
 When you go into Setup Mode for the first time you are presented the first setup screen for controller A.
 
-![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201.png)
+![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201a.png)
 
 The cursor (a thin line at the bottom) indicates which setting is currently selected. 
 
@@ -260,7 +260,7 @@ Each controller is configured by 9 settings arranged in 3 pages of 3 settings ea
 
 ### Settings of the first Setup screen
 
-![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201.png)
+![MIDIsonar Setup 1](https://github.com/PaulGoes/MIDIsonar/blob/master/LCD%20Screen%20Images/MIDIsonar%20Setup%201a.png)
 
 - **ACTV:** Active
   - ON = Active
